@@ -13,21 +13,24 @@ import java.util.List;
 
 @RestController
 public class UserAPI {
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
+
+    public UserAPI(IUserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping(value = "/api-admin-user", produces = "application/json;charset=UTF-8")
-    public UserEntity createUser(@RequestBody UserDTO model, HttpServletRequest request) {
+    public void createUser(@RequestBody UserDTO model, HttpServletRequest request) {
 //        UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
 //        model.setCreatedBy(userDTO.getUserName());
-        return userService.save(model);
+        userService.saveUser(model);
     }
 
     @PutMapping(path = "/api-admin-user", produces = "application/json;charset=UTF-8")
-    public  UserEntity updateUser(@RequestBody UserDTO dto , HttpServletRequest request) {
+    public void updateUser(@RequestBody UserDTO userDTO) {
 //        UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
 //        model.setModifiedBy(userDTO.getUserName());
-        return userService.save(dto);
+        userService.saveUser(userDTO);
     }
 
 

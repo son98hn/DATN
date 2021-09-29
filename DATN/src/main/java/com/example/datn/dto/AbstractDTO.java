@@ -96,7 +96,7 @@ public class AbstractDTO<T> {
         this.type = type;
     }
 
-    public String getMessage() {
+    public String getMessage(String s) {
         return message;
     }
 

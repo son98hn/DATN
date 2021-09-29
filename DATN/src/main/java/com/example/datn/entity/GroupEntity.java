@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "group_role")
-public class GroupRoleEntity extends BaseEntity {
+@Table(name = "group")
+public class GroupEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
     @Column(name = "code")
     private String code;
 
-    @OneToMany(mappedBy = "groupRoleEntity")
-    private List<GroupRoleDetailEntity> groupRoleDetailEntityList = new ArrayList<>();
+    @OneToMany(mappedBy = "groupEntity")
+    private List<GroupFunctionEntity> groupFunctionEntityList = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -35,11 +35,11 @@ public class GroupRoleEntity extends BaseEntity {
         this.code = code;
     }
 
-    public List<GroupRoleDetailEntity> getGroupRoleDetailEntityList() {
-        return groupRoleDetailEntityList;
+    public List<GroupFunctionEntity> getGroupFunctionEntityList() {
+        return groupFunctionEntityList;
     }
 
-    public void setGroupRoleDetailEntityList(List<GroupRoleDetailEntity> groupRoleDetailEntityList) {
-        this.groupRoleDetailEntityList = groupRoleDetailEntityList;
+    public void setGroupFunctions(List<GroupFunctionEntity> groupFunctionEntityList) {
+        this.groupFunctionEntityList = groupFunctionEntityList;
     }
 }

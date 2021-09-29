@@ -2,13 +2,12 @@ package com.example.datn.service.impl;
 
 
 import com.example.datn.dto.UserDTO;
-import com.example.datn.entity.GroupRoleUserEntity;
 import com.example.datn.entity.UserEntity;
-import com.example.datn.repository.GroupRoleRepository;
-import com.example.datn.repository.GroupRoleUserRepository;
+import com.example.datn.entity.UserGroupEntity;
+import com.example.datn.repository.GroupRepository;
+import com.example.datn.repository.UserGroupRepository;
 import com.example.datn.repository.UserRepository;
 import com.example.datn.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,47 +16,72 @@ import java.util.List;
 
 @Service
 public class UserService implements IUserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private GroupRoleRepository groupRoleRepository;
-    @Autowired
-    private GroupRoleUserRepository groupRoleUserRepository;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
+    private final UserGroupRepository userGroupRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private static final String DefaultPassword = "Abc@12345678";
+
+    public UserService(UserRepository userRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
+        this.userGroupRepository = userGroupRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
     @Override
-    public UserEntity save(UserDTO userDTO) {
-        if (userDTO.getId() != null) {
-            groupRoleUserRepository.deleteByUserId(userDTO.getId());
-            UserEntity oldUserEntity = userRepository.findById(userDTO.getId()).get();
-            return getUserEntity(userDTO, oldUserEntity);
+    public void saveUser(UserDTO userDTO) {
+        if (userDTO.getId() == null) {
+            if (!verifyUser(userDTO.getUserName(), userDTO.getPhone(), userDTO.getEmail())) {
+                UserEntity userEntity = new UserEntity();
+                userEntity.setUserName(userDTO.getUserName());
+                userEntity.setPassword(bCryptPasswordEncoder.encode(DefaultPassword));
+                userRepository.save(userEntity);
+                for (int i = 0; i < userDTO.getGroupName().size(); i++) {
+                    UserGroupEntity userGroupEntity = new UserGroupEntity();
+                    userGroupEntity.setUserEntity(userEntity);
+                    userGroupEntity.setGroupEntity(groupRepository.findByName(userDTO.getGroupName().get(i)));
+                    userGroupRepository.save(userGroupEntity);
+                }
+                userDTO.setMessage("Tạo tài khoản thành công");
+            } else {
+                userDTO.setMessage("Tải khoản đã được sử dụng");
+            }
         } else {
-            UserEntity userEntity = new UserEntity();
-            return getUserEntity(userDTO, userEntity);
+            if (!verifyUser(userDTO.getUserName(), userDTO.getEmail(), userDTO.getPhone())) {
+                UserEntity oldUser = userRepository.findById(userDTO.getId()).get();
+//                oldUser.setUserName(oldUser.getUserName());
+//                oldUser.setPassword(oldUser.getPassword());
+                oldUser.setEmail(userDTO.getEmail());
+                oldUser.setPhone(userDTO.getPhone());
+                oldUser.setName(userDTO.getName());
+                userRepository.save(oldUser);
+                for (int i = 0; i < userDTO.getGroupName().size(); i++) {
+                    UserGroupEntity userGroupEntity = new UserGroupEntity();
+                    userGroupEntity.setUserEntity(oldUser);
+                    userGroupEntity.setGroupEntity(groupRepository.findByName(userDTO.getGroupName().get(i)));
+                    userGroupRepository.save(userGroupEntity);
+                }
+                userDTO.setMessage("Cập nhật tài khoản thành công!");
+            } else {
+                userDTO.setMessage("Số điện thoại hoặc Email đã tồn tại!");
+            }
         }
     }
 
-    private UserEntity getUserEntity(UserDTO userDTO, UserEntity userEntity) {
-        userEntity.setUserName(userDTO.getUserName());
-        userEntity.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
-        userRepository.save(userEntity);
-        for (int i = 0; i < userDTO.getGroupRoleName().size(); i++) {
-            GroupRoleUserEntity groupRoleUserEntity = new GroupRoleUserEntity();
-            groupRoleUserEntity.setUserEntity(userEntity);
-            groupRoleUserEntity.setGroupRoleEntity(groupRoleRepository.findByName(userDTO.getGroupRoleName().get(i)));
-            groupRoleUserRepository.save(groupRoleUserEntity);
-        }
-        return userRepository.findById(userEntity.getId()).get();
+    private Boolean verifyUser(String userName, String email, String phone) {
+        return userRepository.existsByUserNameOrEmailOrPhone(userName, email, phone);
     }
 
     @Override
     public void delete(long[] ids) {
         for (long item : ids) {
             UserEntity userEntity = userRepository.findById(item).get();
-            groupRoleUserRepository.deleteByUserId(userEntity.getId());
+            userGroupRepository.deleteByUserEntityId(userEntity.getId());
             userRepository.deleteById(item);
         }
     }
+
     @Override
     public int totalItem() {
         return (int) userRepository.count();

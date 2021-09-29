@@ -7,17 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "categoryparent")
+@Table(name = "category_parent")
 public class CategoryParentEntity extends BaseEntity {
-
     private String code;
+
     private String name;
 
-//    @OneToMany(mappedBy = "categoryParentEntity")
-//    private List<CategoryEntity> categoryEntities = new ArrayList<>();
-
     @OneToMany(mappedBy = "categoryParentEntity")
-    private List<CategoryEntity> categoryEntities = new ArrayList<>();
+    private List<CategoryEntity> categoryEntityList = new ArrayList<>();
 
     public String getCode() {
         return code;
@@ -35,11 +32,11 @@ public class CategoryParentEntity extends BaseEntity {
         this.name = name;
     }
 
-    public List<CategoryEntity> getCategoryEntities() {
-        return categoryEntities;
+    public List<CategoryEntity> getCategoryEntityList() {
+        return categoryEntityList;
     }
 
-    public void setCategoryEntities(List<CategoryEntity> categoryEntities) {
-        this.categoryEntities = categoryEntities;
+    public void setCategoryEntityList(List<CategoryEntity> categoryEntities) {
+        this.categoryEntityList = categoryEntityList;
     }
 }

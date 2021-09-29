@@ -7,15 +7,15 @@ import java.util.List;
 @Entity
 @Table(name = "category")
 public class CategoryEntity extends BaseEntity {
-
     private String code;
+
     private String name;
 
     @OneToMany(mappedBy = "categoryEntity")
     private List<NewEntity> newEntityList = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "categoryparent")
+    @JoinColumn(name = "category_parent_id")
     private CategoryParentEntity categoryParentEntity;
 
     public CategoryParentEntity getCategoryParentEntity() {

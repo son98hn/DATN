@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class UserEntity extends BaseEntity {
     @Column(name = "username")
     private String userName;
@@ -16,8 +16,17 @@ public class UserEntity extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    @Column(name="name")
+    private String name;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "email")
+    private String email;
+
     @OneToMany(mappedBy = "userEntity")
-    private List<GroupRoleUserEntity> groupRoleUserEntityList = new ArrayList<>();
+    private List<UserGroupEntity> userGroupEntityList = new ArrayList<>();
 
     public String getUserName() {
         return userName;
@@ -25,6 +34,14 @@ public class UserEntity extends BaseEntity {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPassword() {
@@ -35,11 +52,27 @@ public class UserEntity extends BaseEntity {
         this.password = password;
     }
 
-    public List<GroupRoleUserEntity> getGroupRoleUserEntityList() {
-        return groupRoleUserEntityList;
+    public List<UserGroupEntity> getUserGroupEntityList() {
+        return userGroupEntityList;
     }
 
-    public void setGroupRoleUserEntityList(List<GroupRoleUserEntity> groupRoleUserEntityList) {
-        this.groupRoleUserEntityList = groupRoleUserEntityList;
+    public void setUserGroupEntityList(List<UserGroupEntity> userGroupEntityList) {
+        this.userGroupEntityList = userGroupEntityList;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.password = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

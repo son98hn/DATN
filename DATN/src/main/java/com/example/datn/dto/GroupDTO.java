@@ -3,10 +3,10 @@ package com.example.datn.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupRoleDTO extends AbstractDTO<GroupRoleDTO>{
+public class GroupDTO extends AbstractDTO<GroupDTO>{
     private String code;
     private String name;
-    private List<String> listStringRoleDetailName = new ArrayList<>();
+    private List<String> listStringFunctionName = new ArrayList<>();
 
     public String getCode() {
         return code;
@@ -24,11 +24,11 @@ public class GroupRoleDTO extends AbstractDTO<GroupRoleDTO>{
         this.name = name;
     }
 
-    public List<String> getListStringRoleDetailName() {
-        return listStringRoleDetailName;
+    public List<String> getListStringFunctionName() {
+        return listStringFunctionName;
     }
 
-    public void setListStringRoleDetailName(List<String> listStringRoleDetailName) {
-        this.listStringRoleDetailName = listStringRoleDetailName;
+    public void setListStringFunctionName(List<String> listStringFunctionName) {
+        this.listStringFunctionName = listStringFunctionName;
     }
 }

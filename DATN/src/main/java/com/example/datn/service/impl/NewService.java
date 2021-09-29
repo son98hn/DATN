@@ -6,49 +6,64 @@ import com.example.datn.entity.NewEntity;
 import com.example.datn.repository.CategoryRepository;
 import com.example.datn.repository.NewRepository;
 import com.example.datn.service.INewService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class NewService implements INewService {
-    @Autowired
-    private NewRepository newRepository;
+    private final NewRepository newRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    public NewService(NewRepository newRepository, CategoryRepository categoryRepository) {
+        this.newRepository = newRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
-    public NewEntity save(NewDTO newDTO) {
-        NewEntity newEntity = new NewEntity();
+    public void saveNew(NewDTO newDTO) {
         if (newDTO.getId() != null) {
-            NewEntity oldNewEntity = newRepository.findById(newDTO.getId()).get();
-            oldNewEntity.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-            oldNewEntity.setTitle(newDTO.getTitle());
-            oldNewEntity.setContent(newDTO.getContent());
-            oldNewEntity.setThumbnail(newDTO.getThumbnail());
-            oldNewEntity.setShortDescription(newDTO.getShortDescription());
-            CategoryEntity categoryEntity = categoryRepository.findById(newDTO.getCategoryId()).get();
-            oldNewEntity.setCategoryEntity(categoryEntity);
-            newRepository.save(oldNewEntity);
-            return newRepository.findById(oldNewEntity.getId()).get();
+            if(!verifyNew(newDTO.getTitle(), newDTO.getContent())) {
+                NewEntity oldNewEntity = newRepository.findById(newDTO.getId()).get();
+                oldNewEntity.setModifiedDate(LocalDateTime.now());
+                oldNewEntity.setTitle(newDTO.getTitle());
+                oldNewEntity.setContent(newDTO.getContent());
+                oldNewEntity.setThumbnail(newDTO.getThumbnail());
+                oldNewEntity.setShortDescription(newDTO.getShortDescription());
+                oldNewEntity.setStatus(newDTO.getStatus());
+                CategoryEntity categoryEntity = categoryRepository.findById(newDTO.getCategoryId()).get();
+                oldNewEntity.setCategoryEntity(categoryEntity);
+                newRepository.save(oldNewEntity);
+                newDTO.setMessage("Cập nhật bài viết thành công");
+            } else {
+                newDTO.setMessage("Bài viết đã tồn tại");
+            }
         } else {
-            newEntity.setCreatedDate(new Timestamp(System.currentTimeMillis()));
-            newEntity.setTitle(newDTO.getTitle());
-            newEntity.setContent(newDTO.getContent());
-            newEntity.setThumbnail(newDTO.getThumbnail());
-            newEntity.setShortDescription(newDTO.getShortDescription());
-            CategoryEntity categoryEntity = categoryRepository.findById(newDTO.getCategoryId()).get();
-            newEntity.setCategoryEntity(categoryEntity);
-            NewEntity newId = newRepository.save(newEntity);
-            return newRepository.findById(newId.getId()).get();
+            if(!verifyNew(newDTO.getTitle(), newDTO.getContent())) {
+                NewEntity newEntity = new NewEntity();
+                newEntity.setCreatedDate(LocalDateTime.now());
+                newEntity.setTitle(newDTO.getTitle());
+                newEntity.setContent(newDTO.getContent());
+                newEntity.setThumbnail(newDTO.getThumbnail());
+                newEntity.setStatus(0);
+                newEntity.setShortDescription(newDTO.getShortDescription());
+                CategoryEntity categoryEntity = categoryRepository.findById(newDTO.getCategoryId()).get();
+                newEntity.setCategoryEntity(categoryEntity);
+                newRepository.save(newEntity);
+                newDTO.setMessage("Thêm bài viết thành công");
+            } else {
+                newDTO.setMessage("Bài viết đã tồn tại");
+            }
         }
+    }
 
+    private Boolean verifyNew(String title, String content) {
+        return newRepository.existsByTitleAndContent(title, content);
     }
 
     @Override
@@ -58,12 +73,12 @@ public class NewService implements INewService {
         }
     }
 
-    @Override
-    public List<NewEntity> findAll(Pageable pageable) {
-        List<NewEntity> results = new ArrayList<>();
-        List<NewEntity> entities = newRepository.findAll(pageable).getContent();
-        return results;
-    }
+//    @Override
+//    public List<NewEntity> findAll(Pageable pageable) {
+//        List<NewEntity> results = new ArrayList<>();
+//        List<NewEntity> entities = newRepository.findAll(pageable).getContent();
+//        return results;
+//    }
 
     @Override
     public int totalItem() {
@@ -86,13 +101,18 @@ public class NewService implements INewService {
     }
 
     @Override
-    public List<NewEntity> findNew(Pageable pageable) {
-        return newRepository.findNew(pageable);
+    public List<NewEntity> findAllActive(Pageable pageable) {
+        return newRepository.findAllActive(pageable);
+    }
+
+    @Override
+    public List<NewEntity> findAllDeactive(Pageable pageable) {
+        return newRepository.findAllDeactive(pageable);
     }
 
     @Override
     public int totalItemByCategoryParent(String categoryParent) {
-        return (int)newRepository.totalItemByCategoryParent(categoryParent);
+        return (int) newRepository.totalItemByCategoryParent(categoryParent);
     }
 
     @Override
@@ -106,7 +126,13 @@ public class NewService implements INewService {
     }
 
     @Override
-    public List<NewEntity> findAll() {
-        return newRepository.findAll();
+    public void activeNew(Long id) {
+        NewEntity newEntity = newRepository.findById(id).get();
+        newEntity.setStatus(1);
     }
+
+//    @Override
+//    public List<NewEntity> findAll() {
+//        return newRepository.findAll();
+//    }
 }

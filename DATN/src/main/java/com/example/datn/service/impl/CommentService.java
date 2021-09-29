@@ -9,34 +9,41 @@ import com.example.datn.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class CommentService implements ICommentService {
 
-    @Autowired
     private CommentReponsitory commentReponsitory;
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private NewRepository newRepository;
+
+    public CommentService(CommentReponsitory commentReponsitory) {
+        this.commentReponsitory = commentReponsitory;
+    }
+
+    @Autowired
+    public CommentService(UserRepository userRepository, NewRepository newRepository) {
+        this.userRepository = userRepository;
+        this.newRepository = newRepository;
+    }
 
     @Override
     public CommentEntity save(CommentDTO commentDTO) {
         if(commentDTO.getId()!=null){
             CommentEntity oldCommentEntity = commentReponsitory.findById(commentDTO.getId()).get();
             oldCommentEntity.setContent(commentDTO.getContent());
-            oldCommentEntity.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+            oldCommentEntity.setModifiedDate(LocalDateTime.now());
             commentReponsitory.save(oldCommentEntity);
             return commentReponsitory.findById(oldCommentEntity.getId()).get();
         }
         else{
             CommentEntity commentEntity = new CommentEntity();
             commentEntity.setContent(commentDTO.getContent());
-            commentEntity.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+            commentEntity.setCreatedDate(LocalDateTime.now());
             commentEntity.setNewEntity(newRepository.findById(commentDTO.getNewsId()).get());
             commentEntity.setUserEntity(userRepository.findById(commentDTO.getUserId()).get());
             commentReponsitory.save(commentEntity);

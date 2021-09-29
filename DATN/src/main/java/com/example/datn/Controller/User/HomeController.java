@@ -19,21 +19,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 public class HomeController {
-    @Autowired
-    private ICategoryService categoryService;
+    private final ICategoryService categoryService;
 
-    @Autowired
-    private ICategoryParentService categoryParentService;
+    private final ICategoryParentService categoryParentService;
 
-    @Autowired
-    private INewService newService;
+    private final INewService newService;
 
-    @Autowired
-    private ICommentService commentService;
+    private final ICommentService commentService;
+
+    public HomeController(ICategoryService categoryService, ICategoryParentService categoryParentService, INewService newService, ICommentService commentService) {
+        this.categoryService = categoryService;
+        this.categoryParentService = categoryParentService;
+        this.newService = newService;
+        this.commentService = commentService;
+    }
 
     @GetMapping(value = {"/", "/trang-chu"})
     public String index(Model model, HttpServletRequest request, @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -51,7 +53,7 @@ public class HomeController {
         Pageable pageable = PageRequest.of(page - 1, size, sortable);
         model.addAttribute("totalPage", (int) Math.ceil((double) newService.totalItem() / size));
         model.addAttribute("page", page);
-        model.addAttribute("lastNews", newService.findNew(pageable));
+        model.addAttribute("lastNews", newService.findAllActive(pageable));
         model.addAttribute("sportNews", newService.findNewsByCategoryParentCode1("the-thao"));
         model.addAttribute("technologyNews", newService.findNewsByCategoryParentCode1("cong-nghe"));
         model.addAttribute("firstSportNew", newService.findTopByCategoryParentCode("the-thao"));

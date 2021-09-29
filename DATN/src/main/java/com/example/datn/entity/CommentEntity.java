@@ -1,39 +1,42 @@
 package com.example.datn.entity;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 @Table(name = "comment")
 public class CommentEntity extends BaseEntity {
     @ManyToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
     @ManyToOne
-    @JoinColumn(name = "newsid")
+    @JoinColumn(name = "new_id")
     private NewEntity newEntity;
+
     @Column(name = "content")
     private String content;
+
     @Column(name = "createddate")
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "modifieddate")
-    private Date modifiedDate;
+    private LocalDateTime modifiedDate;
 
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
-    public Date getModifiedDate() {
+    public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(LocalDateTime modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 

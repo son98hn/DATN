@@ -15,13 +15,16 @@ import java.security.Principal;
 @RestController
 public class CommentAPI {
 
-    @Autowired
-    private ICommentService commentService;
+    private final ICommentService commentService;
 
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
 
-        @PostMapping(value = "/api-user-comment", produces = "application/json;charset=UTF-8")
+    public CommentAPI(ICommentService commentService, IUserService userService) {
+        this.commentService = commentService;
+        this.userService = userService;
+    }
+
+    @PostMapping(value = "/api-user-comment", produces = "application/json;charset=UTF-8")
         public CommentEntity createComment(@RequestBody CommentDTO model,
                                            @RequestParam Long newId,
                                            HttpServletRequest request, Principal principal) {

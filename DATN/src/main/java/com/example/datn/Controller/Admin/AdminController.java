@@ -2,7 +2,6 @@ package com.example.datn.Controller.Admin;
 
 import com.example.datn.entity.*;
 import com.example.datn.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -11,7 +10,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,16 +19,19 @@ import java.util.List;
 
 @Controller
 public class AdminController {
-    @Autowired
-    private INewService newService;
-    @Autowired
-    private ICategoryService categoryService;
-    @Autowired
-    private IRoleDetailService roleDetailService;
-    @Autowired
-    private IUserService userService;
-    @Autowired
-    private IGroupRoleService groupRoleService;
+    private final INewService newService;
+    private final ICategoryService categoryService;
+    private final IFunctionService functionService;
+    private final IUserService userService;
+    private final IGroupService groupService;
+
+    public AdminController(INewService newService, ICategoryService categoryService, IFunctionService functionService, IUserService userService, IGroupService groupService) {
+        this.newService = newService;
+        this.categoryService = categoryService;
+        this.functionService = functionService;
+        this.userService = userService;
+        this.groupService = groupService;
+    }
 
 
     @GetMapping("/admin-new")
@@ -41,13 +42,13 @@ public class AdminController {
 //        phân quyền theo tk đăng nhập
         String userName = principal.getName();
         UserEntity userEntity = userService.findByUserName(userName);
-        List<String> list_roleDetailCode_str = new ArrayList<>();
-        List<RoleDetailEntity> roleDetailEntities = roleDetailService.findRoleByUserName(userName);
-        for (RoleDetailEntity entity : roleDetailEntities) {
-            String roleDetailCode_str = entity.getCode();
-            list_roleDetailCode_str.add(roleDetailCode_str);
+        List<String> list_functionCode_str = new ArrayList<>();
+        List<FunctionEntity> functionEntities = functionService.findRoleByUserName(userName);
+        for (FunctionEntity functionEntity : functionEntities) {
+            String functionCode_str = functionEntity.getCode();
+            list_functionCode_str.add(functionCode_str);
         }
-        model.addAttribute("userRoleDetail", list_roleDetailCode_str);
+        model.addAttribute("userRoleDetail", list_functionCode_str);
         model.addAttribute("user", userName);
 //
 //        page
@@ -61,11 +62,11 @@ public class AdminController {
             sortable = Sort.by("id").descending();
         }
         Pageable pageable = PageRequest.of(page-1, size, sortable);
-        model.addAttribute("listNew", newService.findNew(pageable));
+        model.addAttribute("listNew", newService.findAllActive(pageable));
 //
 //        tìm thể loại
         List<String> listcategory_str = new ArrayList<>();
-        List<NewEntity> newEntities = newService.findNew(pageable);
+        List<NewEntity> newEntities = newService.findAllActive(pageable);
         for (NewEntity entity : newEntities) {
             Long id = entity.getCategoryEntity().getId();
             CategoryEntity categoryDTO = categoryService.findById(id);
@@ -95,15 +96,16 @@ public class AdminController {
     public String listUser(Model model, Principal principal, @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size,
                            @RequestParam(value = "sort", required = false, defaultValue = "DESC") String sort) {
-//        phân quyền theo tk đăng nhập
+        //        phân quyền theo tk đăng nhập
         String userName = principal.getName();
-        List<String> list_roleDetailCode_str = new ArrayList<>();
-        List<RoleDetailEntity> roleDetailEntities = roleDetailService.findRoleByUserName(userName);
-        for (RoleDetailEntity entity : roleDetailEntities) {
-            String roleDetailCode_str = entity.getCode();
-            list_roleDetailCode_str.add(roleDetailCode_str);
+        UserEntity userEntity = userService.findByUserName(userName);
+        List<String> list_functionCode_str = new ArrayList<>();
+        List<FunctionEntity> functionEntities = functionService.findRoleByUserName(userName);
+        for (FunctionEntity functionEntity : functionEntities) {
+            String functionCode_str = functionEntity.getCode();
+            list_functionCode_str.add(functionCode_str);
         }
-        model.addAttribute("userRoleDetail", list_roleDetailCode_str);
+        model.addAttribute("userRoleDetail", list_functionCode_str);
         model.addAttribute("user", userName);
 //
 //        page
@@ -120,19 +122,19 @@ public class AdminController {
         model.addAttribute("listUser", userService.findUser(pageable));
 //
         //      tìm nhóm quyền
-        List<List> list_groupRoleName_list = new ArrayList<>();
+        List<List> list_groupName_list = new ArrayList<>();
         List<UserEntity> userEntities = userService.findUser(pageable);
         for (UserEntity userEntity1 : userEntities) {
-            List<String> list_groupRoleUser_str = new ArrayList<>();
+            List<String> list_userGroup_str = new ArrayList<>();
             String userName_str = userEntity1.getUserName();
-            List<GroupRoleEntity> groupRoleEntities = groupRoleService.findGroupRoleByUserName(userName_str);
-            for (GroupRoleEntity groupRoleEntity : groupRoleEntities) {
-                String groupRole_str = groupRoleEntity.getName();
-                list_groupRoleUser_str.add(groupRole_str);
+            List<GroupEntity> groupEntities = groupService.findGroupByUserName(userName_str);
+            for (GroupEntity groupEntity : groupEntities) {
+                String group_str = groupEntity.getName();
+                list_userGroup_str.add(group_str);
             }
-            list_groupRoleName_list.add(list_groupRoleUser_str);
+            list_groupName_list.add(list_userGroup_str);
         }
-        model.addAttribute("listGroupRoleUser", list_groupRoleName_list);
+        model.addAttribute("listGroupRoleUser", list_groupName_list);
 //
         return "admin/tk/list-user";
     }
@@ -142,21 +144,21 @@ public class AdminController {
         UserEntity userEntity = new UserEntity();
         if (id != null) {
             userEntity = userService.findById(id);
-            List<String> list_groupRoleUserName_str = new ArrayList<>();
-            List<GroupRoleEntity> groupRoleEntities = groupRoleService.findGroupRoleByUserName(userEntity.getUserName());
-            for (GroupRoleEntity groupRoleEntity : groupRoleEntities) {
-                String groupRoleUserName_str = groupRoleEntity.getName();
-                list_groupRoleUserName_str.add(groupRoleUserName_str);
+            List<String> list_groupUserName_str = new ArrayList<>();
+            List<GroupEntity> groupEntities = groupService.findGroupByUserName(userEntity.getUserName());
+            for (GroupEntity groupEntity : groupEntities) {
+                String groupUserName_str = groupEntity.getName();
+                list_groupUserName_str.add(groupUserName_str);
             }
-            model.addAttribute("userGroupRoleNames", list_groupRoleUserName_str);
+            model.addAttribute("userGroupRoleNames", list_groupUserName_str);
         }
-        List<GroupRoleEntity> groupRoleUserEntityList = groupRoleService.findAll();
-        List<String> list_groupRoleName_str = new ArrayList<>();
-        for (GroupRoleEntity groupRoleEntity : groupRoleUserEntityList) {
-            String groupRoleName_str = groupRoleEntity.getName();
-            list_groupRoleName_str.add(groupRoleName_str);
+        List<GroupEntity> groupEntities = groupService.findAll();
+        List<String> list_groupName_str = new ArrayList<>();
+        for (GroupEntity groupEntity : groupEntities) {
+            String groupName_str = groupEntity.getName();
+            list_groupName_str.add(groupName_str);
         }
-        model.addAttribute("groupRoles", list_groupRoleName_str);
+        model.addAttribute("groupRoles", list_groupName_str);
         model.addAttribute("users", userEntity);
         User loginedUser = (User) ((Authentication) principal).getPrincipal();
         UserEntity userEntity1 = userService.findByUserName(loginedUser.getUsername());
@@ -171,17 +173,17 @@ public class AdminController {
 //        phân quyền theo tk đăng nhập
         String userName = principal.getName();
         UserEntity userEntity = userService.findByUserName(userName);
-        List<String> list_roleDetailCode_str = new ArrayList<>();
-        List<RoleDetailEntity> roleDetailEntities = roleDetailService.findRoleByUserName(userName);
-        for (RoleDetailEntity entity : roleDetailEntities) {
-            String roleDetailCode_str = entity.getCode();
-            list_roleDetailCode_str.add(roleDetailCode_str);
+        List<String> list_functionCode_str = new ArrayList<>();
+        List<FunctionEntity> functionEntities = functionService.findRoleByUserName(userName);
+        for (FunctionEntity entity : functionEntities) {
+            String functionCode_str = entity.getCode();
+            list_functionCode_str.add(functionCode_str);
         }
-        model.addAttribute("userRoleDetail", list_roleDetailCode_str);
+        model.addAttribute("userRoleDetail", list_functionCode_str);
         model.addAttribute("user", userName);
 //
         //        page
-        model.addAttribute("totalPage", (int) Math.ceil((double) groupRoleService.totalItem() / size));
+        model.addAttribute("totalPage", (int) Math.ceil((double) groupService.totalItem() / size));
         model.addAttribute("page", page);
         Sort sortable = null;
         if (sort.equals("ASC")) {
@@ -191,48 +193,48 @@ public class AdminController {
             sortable = Sort.by("id").descending();
         }
         Pageable pageable = PageRequest.of(page-1, size, sortable);
-        model.addAttribute("listGroupRole", groupRoleService.findGroupRole(pageable));
+        model.addAttribute("listGroupRole", groupService.findGroup(pageable));
 //
 //        tìm chi tiết nhóm quyền
-        List<GroupRoleEntity> groupRoleEntities = groupRoleService.findGroupRole(pageable);
-        List<List> list_roleDetail_list = new ArrayList<>();
-        for (GroupRoleEntity entity : groupRoleEntities) {
-            List<String> list_roleDetail_str = new ArrayList<>();
+        List<GroupEntity> groupEntities = groupService.findGroup(pageable);
+        List<List> list_function_list = new ArrayList<>();
+        for (GroupEntity entity : groupEntities) {
+            List<String> list_function_str = new ArrayList<>();
             Long id_long = entity.getId();
-            List<RoleDetailEntity> roleDetailEntityList = roleDetailService.findRoleByGroupRoleId(id_long);
-            for (RoleDetailEntity entity1 : roleDetailEntityList) {
-                String roleDetail_str = entity1.getPermission();
-                list_roleDetail_str.add(roleDetail_str);
+            List<FunctionEntity> functionEntityList = functionService.findRoleByGroupRoleId(id_long);
+            for (FunctionEntity functionEntity : functionEntityList) {
+                String function_str = functionEntity.getName();
+                list_function_str.add(function_str);
             }
-            list_roleDetail_list.add(list_roleDetail_str);
+            list_function_list.add(list_function_str);
         }
-        model.addAttribute("groupRoleRoleDetails", list_roleDetail_list);
+        model.addAttribute("groupRoleRoleDetails", list_function_list);
         return "admin/grouprole/list-grouprole";
     }
 
     @GetMapping("/admin-addOrUpdateGroupRole")
     public String addOrUpdateGroupRole(@RequestParam(value = "id", required = false) Long id, Model model, Principal principal) {
-        GroupRoleEntity groupRoleEntity = new GroupRoleEntity();
+        GroupEntity groupEntity = new GroupEntity();
         if (id != null) {
-            groupRoleEntity = groupRoleService.findById(id);
-            List<String> list_roleDetail_str = new ArrayList<>();
-            List<RoleDetailEntity> roleDetailEntityList = roleDetailService.findRoleByGroupRoleId(groupRoleEntity.getId());
-            for (RoleDetailEntity roleDetailEntity : roleDetailEntityList) {
-                String roleDetail_str = roleDetailEntity.getPermission();
-                list_roleDetail_str.add(roleDetail_str);
+            groupEntity = groupService.findById(id);
+            List<String> list_function_str = new ArrayList<>();
+            List<FunctionEntity> functionEntities = functionService.findRoleByGroupRoleId(groupEntity.getId());
+            for (FunctionEntity functionEntity : functionEntities) {
+                String function_str = functionEntity.getName();
+                list_function_str.add(function_str);
             }
-            model.addAttribute("groupRoleRoleDetails", list_roleDetail_str);
+            model.addAttribute("groupRoleRoleDetails", list_function_str);
         }
-        List<RoleDetailEntity> roleDetailEntityList = roleDetailService.findAll();
-        List<String> roleDetail_str = new ArrayList<>();
-        for (RoleDetailEntity roleDetailEntity : roleDetailEntityList) {
-            String roleDetailPermission = roleDetailEntity.getPermission();
-            roleDetail_str.add(roleDetailPermission);
+        List<FunctionEntity> functionEntities = functionService.findAll();
+        List<String> function_str = new ArrayList<>();
+        for (FunctionEntity functionEntity : functionEntities) {
+            String functionName = functionEntity.getName();
+            function_str.add(functionName);
         }
-        model.addAttribute("roleDetailPermission", roleDetail_str);
-        List<GroupRoleEntity> groupRoleEntities = groupRoleService.findAll();
-        model.addAttribute("roleDetails", roleDetailService.findAll());
-        model.addAttribute("groupRoles", groupRoleEntity);
+        model.addAttribute("roleDetailPermission", function_str);
+        List<GroupEntity> groupEntities = groupService.findAll();
+        model.addAttribute("roleDetails", functionService.findAll());
+        model.addAttribute("groupRoles", groupEntity);
         User loginedUser = (User) ((Authentication) principal).getPrincipal();
         UserEntity userEntity = userService.findByUserName(loginedUser.getUsername());
         model.addAttribute("userInfo", userEntity.getUserName());
@@ -245,17 +247,17 @@ public class AdminController {
                                  @RequestParam(value = "sort", required = false, defaultValue = "DESC") String sort) {
 //        phân quyền theo tk đăng nhập
         String userName = principal.getName();
-        List<String> list_roleDetailCode_str = new ArrayList<>();
-        List<RoleDetailEntity> roleDetailEntities = roleDetailService.findRoleByUserName(userName);
-        for (RoleDetailEntity entity : roleDetailEntities) {
-            String roleDetailCode_str = entity.getCode();
-            list_roleDetailCode_str.add(roleDetailCode_str);
+        List<String> list_functionCode_str = new ArrayList<>();
+        List<FunctionEntity> functionEntities = functionService.findRoleByUserName(userName);
+        for (FunctionEntity functionEntity : functionEntities) {
+            String functionCode_str = functionEntity.getCode();
+            list_functionCode_str.add(functionCode_str);
         }
-        model.addAttribute("userRoleDetail", list_roleDetailCode_str);
+        model.addAttribute("userRoleDetail", list_functionCode_str);
         model.addAttribute("user", userName);
 //
 //        page
-        model.addAttribute("totalPage", (int) Math.ceil((double) roleDetailService.totalItem() / size));
+        model.addAttribute("totalPage", (int) Math.ceil((double) functionService.totalItem() / size));
         model.addAttribute("page", page);
         Sort sortable = null;
         if (sort.equals("ASC")) {
@@ -265,18 +267,18 @@ public class AdminController {
             sortable = Sort.by("id").descending();
         }
         Pageable pageable = PageRequest.of(page-1, size, sortable);
-        model.addAttribute("listRoleDetail", roleDetailService.findRoleDetail(pageable));
+        model.addAttribute("listRoleDetail", functionService.findRoleDetail(pageable));
 //
         return "admin/roledetail/list-roledetail";
     }
 
     @GetMapping("/admin-addOrUpdateRoleDetail")
-    public String addOrUpdateRoleDetail(@RequestParam(value = "id", required = false) Long id, Model model, Principal principal) {
-        RoleDetailEntity roleDetailEntity = new RoleDetailEntity();
+    public String addOrUpdateFunction(@RequestParam(value = "id", required = false) Long id, Model model, Principal principal) {
+        FunctionEntity functionEntity = new FunctionEntity();
         if (id != null) {
-            roleDetailEntity = roleDetailService.findById(id);
+            functionEntity = functionService.findById(id);
         }
-        model.addAttribute("roleDetail", roleDetailEntity);
+        model.addAttribute("roleDetail", functionEntity);
         User loginedUser = (User) ((Authentication) principal).getPrincipal();
         UserEntity userEntity = userService.findByUserName(loginedUser.getUsername());
         model.addAttribute("userInfo", userEntity.getUserName());
@@ -284,10 +286,23 @@ public class AdminController {
     }
 
     @GetMapping(value = "/admin-home")
-    public String adminHome(Model model, Principal principal) {
+    public String adminHome(Model model, Principal principal, @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size,
+                            @RequestParam(value = "sort", required = false, defaultValue = "DESC") String sort) {
         User loginedUser = (User) ((Authentication) principal).getPrincipal();
         UserEntity userEntity = userService.findByUserName(loginedUser.getUsername());
         model.addAttribute("userInfo", userEntity.getUserName());
+        model.addAttribute("totalPage", (int) Math.ceil((double) newService.totalItem() / size));
+        model.addAttribute("page", page);
+        Sort sortable = null;
+        if (sort.equals("ASC")) {
+            sortable = Sort.by("id").ascending();
+        }
+        if (sort.equals("DESC")) {
+            sortable = Sort.by("id").descending();
+        }
+        Pageable pageable = PageRequest.of(page-1, size, sortable);
+        model.addAttribute("listNew", newService.findAllDeactive(pageable));
         return "admin/home";
     }
 }

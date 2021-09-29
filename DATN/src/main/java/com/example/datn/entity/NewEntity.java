@@ -1,12 +1,7 @@
 package com.example.datn.entity;
 
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "new")
@@ -20,24 +15,35 @@ public class NewEntity extends BaseEntity {
     @Column(name = "shortdescription")
     private String shortDescription;
 
+    @Column(name = "status")
+    private Integer status;
+
     @Column(name = "content")
     private String content;
 
-    @Column(name="createdby")
+    @Column(name = "createdby")
     private String createdBy;
 
-    @Column(name="createddate")
-    private Date createdDate;
+    @Column(name = "createddate")
+    private LocalDateTime createdDate;
 
-    @Column(name="modifiedby")
+    @Column(name = "modifiedby")
     private String modifiedBy;
 
-    @Column(name="modifieddate")
-    private Date modifiedDate;
+    @Column(name = "modifieddate")
+    private LocalDateTime modifiedDate;
 
     @ManyToOne
-    @JoinColumn(name = "categoryid")
+    @JoinColumn(name = "category_id")
     private CategoryEntity categoryEntity;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public String getTitle() {
         return title;
@@ -87,11 +93,11 @@ public class NewEntity extends BaseEntity {
         this.createdBy = createdBy;
     }
 
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -103,11 +109,11 @@ public class NewEntity extends BaseEntity {
         this.modifiedBy = modifiedBy;
     }
 
-    public Date getModifiedDate() {
+    public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(LocalDateTime modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 }

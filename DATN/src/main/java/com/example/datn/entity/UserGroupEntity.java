@@ -6,22 +6,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "grouprole_user")
-public class GroupRoleUserEntity extends BaseEntity {
+@Table(name = "user_group")
+public class UserGroupEntity extends BaseEntity {
     @ManyToOne
-    @JoinColumn(name = "group_roleid")
-    private GroupRoleEntity groupRoleEntity;
+    @JoinColumn(name = "group_id")
+    private GroupEntity groupEntity;
 
     @ManyToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    public GroupRoleEntity getGroupRoleEntity() {
-        return groupRoleEntity;
+    public GroupEntity getGroupEntity() {
+        return groupEntity;
     }
 
-    public void setGroupRoleEntity(GroupRoleEntity groupRoleEntity) {
-        this.groupRoleEntity = groupRoleEntity;
+    public void setGroupEntity(GroupEntity groupEntity) {
+        this.groupEntity = groupEntity;
     }
 
     public UserEntity getUserEntity() {

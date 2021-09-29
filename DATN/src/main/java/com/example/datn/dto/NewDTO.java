@@ -1,5 +1,6 @@
 package com.example.datn.dto;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class NewDTO extends AbstractDTO<NewDTO>{
@@ -10,9 +11,18 @@ public class NewDTO extends AbstractDTO<NewDTO>{
     private Long categoryId;
     private String categoryCode;
     private String createdBy;
-    private Date createdDate;
+    private LocalDateTime createdDate;
     private String modifiedBy;
-    private Date modifiedDate;
+    private LocalDateTime modifiedDate;
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public String getCreatedBy() {
         return createdBy;
@@ -22,11 +32,11 @@ public class NewDTO extends AbstractDTO<NewDTO>{
         this.createdBy = createdBy;
     }
 
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -38,11 +48,11 @@ public class NewDTO extends AbstractDTO<NewDTO>{
         this.modifiedBy = modifiedBy;
     }
 
-    public Date getModifiedDate() {
+    public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(LocalDateTime modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 

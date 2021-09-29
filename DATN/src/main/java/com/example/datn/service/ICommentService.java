@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ICommentService {
     CommentEntity save(CommentDTO commentDTO);
+
     void delete(Long id);
+
     List<CommentEntity> findAllByNewEntityId(Long newId);
 }

@@ -13,6 +13,10 @@ import java.util.List;
 @Transactional
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByUserName(String userName);
-    @Query(value = "SELECT * FROM [users]",nativeQuery = true)
+
+    @Query(value = "SELECT * FROM [user]", nativeQuery = true)
     List<UserEntity> findUser(Pageable pageable);
+
+    Boolean existsByUserNameOrEmailOrPhone(String userName, String email, String phone);
+
 }
