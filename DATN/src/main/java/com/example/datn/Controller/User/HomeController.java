@@ -3,9 +3,8 @@ package com.example.datn.Controller.User;
 import com.example.datn.Utils.WebUtils;
 import com.example.datn.service.ICategoryParentService;
 import com.example.datn.service.ICategoryService;
-import com.example.datn.service.ICommentService;
+//import com.example.datn.service.ICommentService;
 import com.example.datn.service.INewService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,13 +27,13 @@ public class HomeController {
 
     private final INewService newService;
 
-    private final ICommentService commentService;
+//    private final ICommentService commentService;
 
-    public HomeController(ICategoryService categoryService, ICategoryParentService categoryParentService, INewService newService, ICommentService commentService) {
+    public HomeController(ICategoryService categoryService, ICategoryParentService categoryParentService, INewService newService) {
         this.categoryService = categoryService;
         this.categoryParentService = categoryParentService;
         this.newService = newService;
-        this.commentService = commentService;
+//        this.commentService = commentService;
     }
 
     @GetMapping(value = {"/", "/trang-chu"})
@@ -51,7 +50,7 @@ public class HomeController {
             sortable = Sort.by("id").descending();
         }
         Pageable pageable = PageRequest.of(page - 1, size, sortable);
-        model.addAttribute("totalPage", (int) Math.ceil((double) newService.totalItem() / size));
+        model.addAttribute("totalPage", (int) Math.ceil((double) newService.totalItemActive() / size));
         model.addAttribute("page", page);
         model.addAttribute("lastNews", newService.findAllActive(pageable));
         model.addAttribute("sportNews", newService.findNewsByCategoryParentCode1("the-thao"));
@@ -69,7 +68,7 @@ public class HomeController {
                           @PathVariable("id") Long id) {
         model.addAttribute("bv",newService.findById(id));
         model.addAttribute("categoryParent", categoryParentService.findAll());
-        model.addAttribute("comments", commentService.findAllByNewEntityId(id));
+//        model.addAttribute("comments", commentService.findAllByNewEntityId(id));
         return "web/bai-viet";
     }
 

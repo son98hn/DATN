@@ -11,19 +11,15 @@ public interface IFunctionService {
 
     void delete(long[] ids);
 
-//    List<RoleDetailEntity> findAll(Pageable pageable);
-
     List<FunctionEntity> findAll();
 
     int totalItem();
 
-    List<FunctionEntity> findRoleByUserName(String userName);
+    List<FunctionEntity> findFunctionByUserName(String userName);
 
-    List<FunctionEntity> findRoleByGroupRoleId(Long id_long);
-
-//    List<RoleDetailEntity> findRoleByRoleId(Long id_long);
+    List<FunctionEntity> findFunctionByGroupId(Long id_long);
 
     FunctionEntity findById(Long id);
 
-    List<FunctionEntity> findRoleDetail(Pageable pageable);
+    List<FunctionEntity> findFunction(Pageable pageable);
 }

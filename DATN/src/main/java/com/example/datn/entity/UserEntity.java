@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity extends BaseEntity {
     @Column(name = "username")
-    private String userName;
+    private String username;
 
     @Column(name = "password")
     private String password;
@@ -25,15 +25,26 @@ public class UserEntity extends BaseEntity {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "avatar")
+    private String avatar;
+
     @OneToMany(mappedBy = "userEntity")
     private List<UserGroupEntity> userGroupEntityList = new ArrayList<>();
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String userName) {
+        this.username = userName;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getName() {
@@ -65,7 +76,7 @@ public class UserEntity extends BaseEntity {
     }
 
     public void setPhone(String phone) {
-        this.password = phone;
+        this.phone = phone;
     }
 
     public String getEmail() {

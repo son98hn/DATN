@@ -90,13 +90,13 @@ public class FunctionService implements IFunctionService {
     }
 
     @Override
-    public List<FunctionEntity> findRoleByUserName(String userName) {
-        return functionRepository.findRoleByUserName(userName);
+    public List<FunctionEntity> findFunctionByUserName(String userName) {
+        return functionRepository.findFunctionByUserName(userName);
     }
 
     @Override
-    public List<FunctionEntity> findRoleByGroupRoleId(Long id_long) {
-        return functionRepository.findRoleByGroupId(id_long);
+    public List<FunctionEntity> findFunctionByGroupId(Long id_long) {
+        return functionRepository.findFunctionByGroupId(id_long);
     }
 
 //    @Override
@@ -110,7 +110,7 @@ public class FunctionService implements IFunctionService {
     }
 
     @Override
-    public List<FunctionEntity> findRoleDetail(Pageable pageable) {
-        return functionRepository.findFuntion(pageable);
+    public List<FunctionEntity> findFunction(Pageable pageable) {
+        return functionRepository.findFunction(pageable);
     }
 }

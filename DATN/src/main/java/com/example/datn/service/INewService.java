@@ -13,7 +13,9 @@ public interface INewService {
 
     void delete(long[] ids);
 
-    int totalItem();
+    int totalItemActive();
+
+    int totalItemDeactive();
 
     NewEntity findById(Long id);
 
@@ -30,6 +32,4 @@ public interface INewService {
     NewEntity findTopByCategoryParentCode(String categoryParentCode);
 
     NewEntity findByTitle(String title);
-
-    void activeNew(Long id);
 }

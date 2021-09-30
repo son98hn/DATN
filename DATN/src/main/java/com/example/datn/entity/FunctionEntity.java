@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "function")
+@Table(name = "functions")
 public class FunctionEntity extends BaseEntity{
     @Column(name = "name")
     private String name;

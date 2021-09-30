@@ -7,8 +7,6 @@ import com.example.datn.repository.CategoryRepository;
 import com.example.datn.repository.NewRepository;
 import com.example.datn.service.INewService;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,12 +28,14 @@ public class NewService implements INewService {
         if (newDTO.getId() != null) {
             if(!verifyNew(newDTO.getTitle(), newDTO.getContent())) {
                 NewEntity oldNewEntity = newRepository.findById(newDTO.getId()).get();
+                oldNewEntity.setModifiedBy(newDTO.getModifiedBy());
                 oldNewEntity.setModifiedDate(LocalDateTime.now());
+//                oldNewEntity.setModifiedBy();
                 oldNewEntity.setTitle(newDTO.getTitle());
                 oldNewEntity.setContent(newDTO.getContent());
                 oldNewEntity.setThumbnail(newDTO.getThumbnail());
                 oldNewEntity.setShortDescription(newDTO.getShortDescription());
-                oldNewEntity.setStatus(newDTO.getStatus());
+                oldNewEntity.setStatus(1);
                 CategoryEntity categoryEntity = categoryRepository.findById(newDTO.getCategoryId()).get();
                 oldNewEntity.setCategoryEntity(categoryEntity);
                 newRepository.save(oldNewEntity);
@@ -46,6 +46,7 @@ public class NewService implements INewService {
         } else {
             if(!verifyNew(newDTO.getTitle(), newDTO.getContent())) {
                 NewEntity newEntity = new NewEntity();
+                newEntity.setCreatedBy(newDTO.getCreatedBy());
                 newEntity.setCreatedDate(LocalDateTime.now());
                 newEntity.setTitle(newDTO.getTitle());
                 newEntity.setContent(newDTO.getContent());
@@ -66,12 +67,7 @@ public class NewService implements INewService {
         return newRepository.existsByTitleAndContent(title, content);
     }
 
-    @Override
-    public void delete(long[] ids) {
-        for (long item : ids) {
-            newRepository.removeById(item);
-        }
-    }
+
 
 //    @Override
 //    public List<NewEntity> findAll(Pageable pageable) {
@@ -81,8 +77,13 @@ public class NewService implements INewService {
 //    }
 
     @Override
-    public int totalItem() {
-        return (int) newRepository.count();
+    public int totalItemActive() {
+        return (int) newRepository.totalItemActive();
+    }
+
+    @Override
+    public int totalItemDeactive() {
+        return (int) newRepository.totalItemDeactive();
     }
 
     @Override
@@ -126,13 +127,9 @@ public class NewService implements INewService {
     }
 
     @Override
-    public void activeNew(Long id) {
-        NewEntity newEntity = newRepository.findById(id).get();
-        newEntity.setStatus(1);
+    public void delete(long[] ids) {
+        for (long item : ids) {
+            newRepository.removeById(item);
+        }
     }
-
-//    @Override
-//    public List<NewEntity> findAll() {
-//        return newRepository.findAll();
-//    }
 }

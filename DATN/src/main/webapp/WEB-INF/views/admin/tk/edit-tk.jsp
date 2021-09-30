@@ -96,11 +96,11 @@
                                 <li><a href='<c:url value ="/admin-user"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS tài khoản
                                     </a> <b class="arrow"></b></li>
-                                <li><a href='<c:url value ="/admin-grouprole"/>'>
+                                <li><a href='<c:url value ="/admin-group"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS nhóm quyền
                                     </a> <b class="arrow"></b></li>
 
-                                <li><a href='<c:url value ="/admin-roledetail"/>'>
+                                <li><a href='<c:url value ="/admin-function"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS chi tiết nhóm quyền
                                     </a> <b class="arrow"></b></li>
                             </ul>
@@ -136,34 +136,58 @@
                                         </div>
                                     </c:if>
                                     <form id="formSubmit">
-
                                         <div class="form-group">
                                             <label class="col-sm-3 control-label no-padding-right">Username</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="userName" name="userName"
-                                                    value="${users.userName}" />
+                                                <input type="text" class="form-control" id="username" name="username"
+                                                    value="${users.username}" />
                                             </div>
                                         </div>
                                         <br />
                                         <br />
-                                        <div class="form-group">
+                                        <!-- <div class="form-group">
                                             <label class="col-sm-3 control-label no-padding-right">Password</label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" id="password" name="password"
                                                     value="${users.password}" />
                                             </div>
+                                        </div> -->
+                                        <!-- <br /> -->
+                                        <!-- <br /> -->
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label no-padding-right">Tên</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                    value="${users.name}" />
+                                            </div>
                                         </div>
                                         <br />
                                         <br />
-                                    
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label no-padding-right">Email</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="email" name="email"
+                                                    value="${users.email}" />
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <br />
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label no-padding-right">Số điện thoại</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="phone" name="phone"
+                                                    value="${users.phone}" />
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <br />
                                         <div class="form-group">
                                             <label class="col-sm-3 control-label no-padding-right">Nhóm quyền</label>
                                             <div class="col-sm-9">
-                                                <c:forEach var="item" items="${groupRoles}">
-                                                    <input id="${item}" type="checkbox" name="groupRoleName"
-                                                        value="${item}" <c:forEach var="item1"
-                                                        items="${userGroupRoleNames}">
-                                                        <c:if test="${item.contains(item1) == true}">
+                                                <c:forEach var="item" items="${groups}">
+                                                    <input id="${item}" type="checkbox" name="groupName" value="${item}"
+                                                        <c:forEach var="item1" items="${userGroupNames}">
+                                                    <c:if test="${item.contains(item1) == true}">
                                                         checked="checked"
                                                     </c:if>
                                                 </c:forEach>>${item}<br />
@@ -242,24 +266,32 @@
                 }
             });
             function addUser(data) {
-                var userName = "";
-                var passWord = "";
-                var grRole = [];
+                var username = "";
+                var name = "";
+                var email = "";
+                var phone = "";
+                var gr = [];
                 var id;
                 data.forEach(element => {
-                    if (element.name == "userName")
-                        userName = element.value;
-                    if (element.name == "password")
-                        passWord = element.value;
-                    if (element.name == "groupRoleName")
-                        grRole.push(element.value);
+                    if (element.name == "username")
+                        username = element.value;
+                    if (element.name == "name")
+                        name = element.value;
+                    if (element.name == "email")
+                        email = element.value;
+                    if (element.name == "phone")
+                        phone = element.value;
+                    if (element.name == "groupName")
+                        gr.push(element.value);
                     if (element.name == "id")
                         id = element.value;
                 });
                 sendDta = {
-                    userName: userName,
-                    password: passWord,
-                    groupRoleName: grRole,
+                    username: username,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    groupName: gr,
                     id: id
                 };
                 $.ajax({
@@ -277,34 +309,40 @@
                 });
             }
             function updateUser(data) {
-                var userName = "";
-                var passWord = "";
-                var grRole = [];
+                var username = "";
+                var name = "";
+                var email = "";
+                var phone = "";
+                var gr = [];
                 var id;
                 data.forEach(element => {
-                    if (element.name == "userName")
-                        userName = element.value;
-                    if (element.name == "password")
-                        passWord = element.value;
-                    if (element.name == "groupRoleName")
-                        grRole.push(element.value);
+                    if (element.name == "username")
+                        username = element.value;
+                    if (element.name == "name")
+                        name = element.value;
+                    if (element.name == "email")
+                        email = element.value;
+                    if (element.name == "phone")
+                        phone = element.value;
+                    if (element.name == "groupName")
+                        gr.push(element.value);
                     if (element.name == "id")
                         id = element.value;
                 });
                 sendDta = {
-                    userName: userName,
-                    password: passWord,
-                    groupRoleName: grRole,
-                    id: id,
-                    groupRoleCode: "",
-
+                    username: username,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    groupName: gr,
+                    id: id
                 };
                 $.ajax({
                     url: '/api-admin-user',
                     type: 'PUT',
                     contentType: 'application/json',
                     data: JSON.stringify(sendDta),
-                    // data: JSON.stringify(data),
+                    // data: JSON.stringify(data),  
                     dataType: 'json',
                     success: function (result) {
                         window.location.href = "/admin-addOrUpdateUser?id=" + result.id + "&message=update_success";

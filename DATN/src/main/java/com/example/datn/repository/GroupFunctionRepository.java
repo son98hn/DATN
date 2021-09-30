@@ -12,11 +12,13 @@ import javax.transaction.Transactional;
 @Transactional
 public interface GroupFunctionRepository extends JpaRepository<GroupFunctionEntity, Long> {
     @Modifying
-   @Query(value = "DELETE FROM group_funtion WHERE group_function.group_id=?1", nativeQuery = true)
+    @Query(value = "DELETE FROM group_funtion WHERE group_function.group_id=?1", nativeQuery = true)
     void deleteGroupFunctionByGroupId(Long groupRoleId);
+
     @Modifying
     @Query(value = "DELETE FROME group_function WHERE group_function.function_id=?1", nativeQuery = true)
-    void deleteGroupFunctionByFunctionlId(Long roleDetailId);
-//    GroupFunctionEntity findByRoleDetailEntityId(Long roleDetailId);
+    void deleteGroupFunctionByFunctionId(Long roleDetailId);
+
+    //    GroupFunctionEntity findByRoleDetailEntityId(Long roleDetailId);
     GroupFunctionEntity findByFunctionEntityId(Long functionId);
 }

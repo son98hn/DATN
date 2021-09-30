@@ -88,21 +88,18 @@
                                     class="menu-text"></span>
                                 Quản lí bài viết <b class="arrow fa fa-angle-down"></b>
                             </a> <b class="arrow"></b>
-                            <ul class="submenu">
-                                <li><a
-                                        href='<c:url value ="/admin-new"/>'>
+                            <<ul class="submenu">
+                                <li><a href='<c:url value ="/admin-new"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS bài viết
                                     </a> <b class="arrow"></b></li>
-                                <li><a
-                                        href='<c:url value ="/admin-user"/>'>
+                                <li><a href='<c:url value ="/admin-user"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS tài khoản
                                     </a> <b class="arrow"></b></li>
-                                <li><a
-                                        href='<c:url value ="/admin-grouprole"/>'>
+                                <li><a href='<c:url value ="/admin-group"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS nhóm quyền
                                     </a> <b class="arrow"></b></li>
-                                <li><a
-                                        href='<c:url value ="/admin-roledetail"/>'>
+
+                                <li><a href='<c:url value ="/admin-function"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS chi tiết nhóm quyền
                                     </a> <b class="arrow"></b></li>
                             </ul>
@@ -136,10 +133,10 @@
                                                     <div class="dt-buttons btn-overlap btn-group">
                                                         <a flag="info" class="dt-button buttons-colvis btn btn-white btn-primary
 														btn-bold" data-toggle="tooltip" title='Thêm bài viết' href='
-														<c:url value="/admin-addOrUpdateNew" />' <<c:if test="${userRoleDetail.contains('add-new') == true}">
+														<c:url value="/admin-addOrUpdateNew" />' <<c:if test="${userFunction.contains('add-new') == true}">
                                                             style="visibility:
                                                             visible;"</c:if>
-                                                            <c:if test="${userRoleDetail.contains('add-new') == false}">
+                                                            <c:if test="${userFunction.contains('add-new') == false}">
                                                                 style="visibility:
                                                                 hidden;"</c:if>
 
@@ -148,11 +145,11 @@
                                                             </span>
                                                         </a>
                                                         <button id="btnDelete" type="button" <c:if
-                                                            test="${userRoleDetail.contains('delete-new') == true}">
+                                                            test="${userFunction.contains('delete-new') == true}">
                                                             style="visibility:
                                                             visible;"</c:if>
                                                             <c:if
-                                                                test="${userRoleDetail.contains('delete-new') == false}">
+                                                                test="${userFunction.contains('delete-new') == false}">
                                                                 style="visibility:
                                                                 hidden;"</c:if>
                                                             class="dt-button
@@ -173,8 +170,12 @@
                                                             <tr>
                                                                 <th><input type="checkbox" id="checkAll"></th>
                                                                 <th>Tên bài viết</th>
-                                                                <th>Id</th>
+                                                                <th>Người tạo</th>
+                                                                <th>Người duyệt</th>
+                                                                <th>Ngày tạo</th>
+                                                                <th>Ngày duyệt</th>
                                                                 <th>Thể loại</th>
+                                                                <!-- <th>Xem trước</th> -->
                                                                 <th>Thao tác</th>
                                                             </tr>
                                                         </thead>
@@ -184,8 +185,12 @@
                                                                     <td><input type="checkbox" id="checkbox_${item.id}"
                                                                             value="${item.id}"></td>
                                                                     <td>${item.title}</td>
-                                                                    <td>${item.id}</td>
+                                                                    <td>${item.createdBy}</td>
+                                                                    <td>${item.modifiedBy}</td>
+                                                                    <td>${item.createdDate}</td>
+                                                                    <td>${item.modifiedDate}</td>
                                                                     <td>${listCategory[loop.index]}</td>
+                                                                    <!-- <td></td> -->
                                                                     <td>
                                                                         <c:url var="editURL"
                                                                             value="/admin-addOrUpdateNew">
@@ -193,11 +198,11 @@
                                                                         </c:url> <a
                                                                             class="btn btn-sm btn-primary btn-edit"
                                                                             <c:if
-                                                                            test="${userRoleDetail.contains('edit-new') == true}">
+                                                                            test="${userFunction.contains('edit-new') == true}">
                                                                             style="visibility:
                                                                             visible;"</c:if>
                                                                             <c:if
-                                                                                test="${userRoleDetail.contains('edit-new') == false}">
+                                                                                test="${userFunction.contains('edit-new') == false}">
                                                                                 style="visibility:
                                                                                 hidden;"</c:if>
                                                                             data-toggle="tooltip" title="Cập nhật
@@ -259,7 +264,7 @@
         <script>
             var totalPages = ${totalPage};
             var currentPage = ${page};
-            var limit = 8;
+            var limit = 15;
             $(function () {
                 window.pagObj = $('#pagination').twbsPagination({
                     totalPages: totalPages,

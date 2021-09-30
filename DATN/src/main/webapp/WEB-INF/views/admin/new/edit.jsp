@@ -7,6 +7,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Chỉnh sửa bài viết</title>
+        <script src="<c:url value='/ckeditor/ckeditor.js'/>"></script>
+        <script src="<c:url value='/ckfinder/ckfinder.js'/>"></script>
         <link rel="stylesheet" href="<c:url value='/template/admin/assets/css/bootstrap.min.css' />" />
         <link rel="stylesheet" href="<c:url value='/template/admin/font-awesome/4.5.0/css/font-awesome.min.css' />" />
         <link rel="stylesheet" href="<c:url value='/template/admin/assets/css/ace.min.css' />"
@@ -158,16 +160,38 @@
                                     </div>
                                     <br />
                                     <br />
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label no-padding-right">Hình đại diện</label>
+<%--                                    <div class="form-group">--%>
+<%--                                        <label class="col-sm-3 control-label no-padding-right">Hình đại diện</label>--%>
+<%--                                        <div class="col-sm-9">--%>
+<%--                                            <textarea rows="" cols="" id="thumbnail" name="thumbnail"--%>
+<%--                                                style="width: 820px;height: 50px">${news.thumbnail}</textarea>--%>
+<%--                                            <!-- <input type="file" class="form-control" id="thumbnail" name="thumbnail" value="${model.thumbnail}" /> -->--%>
+<%--                                        </div>--%>
+<%--                                    </div>--%>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 control-label no-padding-right">Hình đại diện
+                                            <span class="text-danger">*</span></label>
                                         <div class="col-sm-9">
-                                            <textarea rows="" cols="" id="thumbnail" name="thumbnail"
-                                                style="width: 820px;height: 50px">${news.thumbnail}</textarea>
-                                            <!-- <input type="file" class="form-control" id="thumbnail" name="thumbnail" value="${model.thumbnail}" /> -->
+                                            <div class="avatar">
+                                                <img id="thumbnail"
+                                                     src="https://yt3.ggpht.com/-f6NCDKG2Ukw/AAAAAAAAAAI/AAAAAAAAAAA/MqMm3rgmqCY/s48-c-k-no-mo-rj-c0xffffff/photo.jpg"
+                                                     class="img-fluid" style="max-width: 300px; max-height: 300px;"/>
+                                            </div>
+                                            <div class="file-field">
+                                                <p>
+                                                    <strong id="Ithumbnail">Chọn ảnh</strong><br/>
+                                                    <button
+                                                            class="btn btn-primary btn-sm waves-effect waves-light"
+                                                            type="button" value="Browse Image"
+                                                            onclick="BrowseServer( 'Images:/', 'Ithumbnail' );">Browse Image
+                                                    </button>
+                                                </p>
+                                                <input type="hidden" name="thumbnail" id="image_src"/>
+                                            </div>
                                         </div>
                                     </div>
-                                    <br />
-                                    <br />
+<%--                                    <br />--%>
+<%--                                    <br />--%>
                                     <div class="form-group">
                                         <label class="col-sm-3 control-label no-padding-right">Mô tả ngắn</label>
                                         <div class="col-sm-9">
@@ -239,12 +263,69 @@
     <script src="<c:url value='/template/admin/assets/js/bootstrap.min.js'/>"></script>
     <script src="<c:url value='/template/admin/assets/js/jquery-ui.min.js'/>"></script>
     <script>
-        var editor1 = '';
-        var editor2 = '';
+        // var editor1 = '';
+        // var editor2 = '';
+        // $(document).ready(function () {
+        //     editor1 = CKEDITOR.replace('content');
+        //     // editor2 = CKEDITOR.replace('thumbnail');
+        // });
+
+        var editor = '';
         $(document).ready(function () {
-            editor1 = CKEDITOR.replace('content');
-            editor2 = CKEDITOR.replace('thumbnail');
+            editor = CKEDITOR.replace('content',
+                {
+                    filebrowserBrowseUrl: '/ckfinder/ckfinder.html',
+                    filebrowserImageBrowseUrl: '/ckfinder/ckfinder.html?type=Images',
+                    filebrowserFlashBrowseUrl: '/ckfinder/ckfinder.html?type=Flash',
+                    filebrowserUploadUrl: '/ckfinder/core/connector/java/connector.java?command=QuickUpload&type=Files',
+                    filebrowserImageUploadUrl: '/ckfinder/core/connector/java/connector.java?command=QuickUpload&type=Images',
+                    filebrowserFlashUploadUrl: '/ckfinder/core/connector/java/connector.java?command=QuickUpload&type=Flash'
+                });
         });
+
+        /*Avatar start*/
+        function BrowseServer(startupPath, functionData) {
+            // You can use the "CKFinder" class to render CKFinder in a page:
+            var finder = new CKFinder();
+
+            // The path for the installation of CKFinder (default = "/ckfinder/").
+            finder.basePath = '../';
+
+            //Startup path in a form: "Type:/path/to/directory/"
+            finder.startupPath = startupPath;
+
+            // Name of a function which is called when a file is selected in CKFinder.
+            finder.selectActionFunction = SetFileField;
+
+            // Additional data to be passed to the selectActionFunction in a second argument.
+            // We'll use this feature to pass the Id of a field that will be updated.
+            finder.selectActionData = functionData;
+
+            // Name of a function which is called when a thumbnail is selected in CKFinder. Preview img
+            // finder.selectThumbnailActionFunction = ShowThumbnails;
+
+            // Launch CKFinder
+            finder.popup();
+        }
+
+        function SetFileField(fileUrl, data) {
+            document.getElementById(data["selectActionData"]).innerHTML = this
+                .getSelectedFile().name;
+            document.getElementById("thumbnail").src = fileUrl;
+            $('#thumbnail').val(fileUrl);
+            $('#image_src').val(fileUrl);
+        }
+
+        // $('#btnCreate').click(function (e) {
+        //     e.preventDefault();
+        //     var data = {};
+        //     var formData = $('#formSubmit').serializeArray();
+        //     $.each(formData, function (i, v) {
+        //         data[""+v.name+""] = v.value;
+        //     });
+        //     data["content"] = editor.getData();
+        //     createNews(data);
+        // });
 
         $('#btnAddOrUpdateNew').click(function (e) {
             e.preventDefault();
@@ -253,8 +334,8 @@
             $.each(formData, function (i, v) {
                 data["" + v.name + ""] = v.value;
             });
-            data["content"] = editor1.getData();
-            data["thumbnail"] = editor2.getData();
+            data["content"] = editor.getData();
+            // data["thumbnail"] = editor2.getData();
             var id = $('#id').val();
             if (id == "") {
                 addNew(data);

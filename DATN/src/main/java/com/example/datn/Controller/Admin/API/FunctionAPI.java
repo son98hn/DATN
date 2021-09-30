@@ -13,21 +13,17 @@ public class FunctionAPI {
         this.functionService = functionService;
     }
 
-    @PostMapping(value = "/api-admin-roledetail", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/api-admin-function", produces = "application/json;charset=UTF-8")
     public void createFunction(@RequestBody FunctionDTO model, HttpServletRequest request) {
-//        UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
-//        model.setCreatedBy(userDTO.getUserName());
         functionService.saveFunction(model);
     }
 
-    @PutMapping(value = "/api-admin-roledetail", produces = "application/json;charset=UTF-8")
+    @PutMapping(value = "/api-admin-function", produces = "application/json;charset=UTF-8")
     public void updateRoleDetail(@RequestBody FunctionDTO model, HttpServletRequest request) {
-//        UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
-//        model.setModifiedBy(userDTO.getUserName());
         functionService.saveFunction(model);
     }
 
-    @DeleteMapping(value = "/api-admin-roledetail", produces = "application/json;charset=UTF-8")
+    @DeleteMapping(value = "/api-admin-function", produces = "application/json;charset=UTF-8")
     public void deleteRoleDetail(@RequestBody long[] ids) {
         functionService.delete(ids);
     }

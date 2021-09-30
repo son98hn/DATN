@@ -13,21 +13,21 @@ public class GroupAPI {
         this.groupService = groupService;
     }
 
-    @PostMapping(value = "/api-admin-grouprole", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/api-admin-group", produces = "application/json;charset=UTF-8")
     public void createGroupRole(@RequestBody GroupDTO model, HttpServletRequest request) {
 //        UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
 //        model.setCreatedBy(userDTO.getUserName());
         groupService.saveGroup(model);
     }
 
-    @PutMapping(value = "/api-admin-grouprole", produces = "application/json;charset=UTF-8")
+    @PutMapping(value = "/api-admin-group", produces = "application/json;charset=UTF-8")
     public void updateGroupRole(@RequestBody GroupDTO model, HttpServletRequest request) {
 //        UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
 //        model.setModifiedBy(userDTO.getUserName());
         groupService.saveGroup(model);
     }
 
-    @DeleteMapping(value = "/api-admin-grouprole", produces = "application/json;charset=UTF-8")
+    @DeleteMapping(value = "/api-admin-group", produces = "application/json;charset=UTF-8")
     public void deleteGroupRole(@RequestBody long[] ids) {
         groupService.delete(ids);
     }

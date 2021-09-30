@@ -89,21 +89,17 @@
                                 Quản lí bài viết <b class="arrow fa fa-angle-down"></b>
                             </a> <b class="arrow"></b>
                             <ul class="submenu">
-                                <li><a
-                                        href='<c:url value ="/admin-new"/>'>
+                                <li><a href='<c:url value ="/admin-new"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS bài viết
                                     </a> <b class="arrow"></b></li>
-                                <li><a
-                                        href='<c:url value ="/admin-user"/>'>
+                                <li><a href='<c:url value ="/admin-user"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS tài khoản
                                     </a> <b class="arrow"></b></li>
-                                <li><a
-                                        href='<c:url value ="/admin-grouprole"/>'>
+                                <li><a href='<c:url value ="/admin-group"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS nhóm quyền
                                     </a> <b class="arrow"></b></li>
 
-                                <li><a
-                                        href='<c:url value ="/admin-roledetail"/>'>
+                                <li><a href='<c:url value ="/admin-function"/>'>
                                         <i class="menu-icon fa fa-caret-right"></i> DS chi tiết nhóm quyền
                                     </a> <b class="arrow"></b></li>
                             </ul>
@@ -136,23 +132,37 @@
                                                     <div class="dt-buttons btn-overlap btn-group">
                                                         <a flag="info" class="dt-button buttons-colvis btn btn-white btn-primary
 														btn-bold" data-toggle="tooltip" title='Thêm tài khoản' href='
-														<c:url value="/admin-addOrUpdateUser" />' <c:if test="${userRoleDetail.contains('add-account') == true}">
+														<c:url value="/admin-addOrUpdateUser" />' <c:if test="${userFunction.contains('add-account') == true}">
                                                             style="visibility:
                                                             visible;"</c:if>
                                                             <c:if
-                                                                test="${userRoleDetail.contains('add-account') == false}">
+                                                                test="${userFunction.contains('add-account') == false}">
                                                                 style="visibility:
                                                                 hidden;"</c:if>
                                                             > <span>
                                                                 <i class="fa fa-plus-circle bigger-110 purple"></i>
                                                             </span>
                                                         </a>
-                                                        <button id="btnDelete" type="button" <c:if
-                                                            test="${userRoleDetail.contains('delete-account') == true}">
+                                                        <button id="btnRs" type="button" <c:if
+                                                            test="${userFunction.contains('edit-account') == true}">
                                                             style="visibility:
                                                             visible;"</c:if>
                                                             <c:if
-                                                                test="${userRoleDetail.contains('delete-account') == false}">
+                                                                test="${userFunction.contains('eidt-account') == false}">
+                                                                style="visibility:
+                                                                hidden;"</c:if>
+                                                            class="dt-button buttons-html5 btn btn-white btn-primary
+                                                            btn-bold"
+                                                            data-toggle="tooltip" title='Reset password'>
+                                                            <span> <i class="fa fa-undo" aria-hidden="true"></i>
+                                                            </span>
+                                                        </button>
+                                                        <button id="btnDelete" type="button" <c:if
+                                                            test="${userFunction.contains('delete-account') == true}">
+                                                            style="visibility:
+                                                            visible;"</c:if>
+                                                            <c:if
+                                                                test="${userFunction.contains('delete-account') == false}">
                                                                 style="visibility:
                                                                 hidden;"</c:if>
                                                             class="dt-button buttons-html5 btn btn-white btn-primary
@@ -173,9 +183,10 @@
                                                             <tr>
                                                                 <th><input type="checkbox" id="checkAll"></th>
                                                                 <th>Username</th>
-                                                                <th>Password</th>
+
                                                                 <th>Quyền</th>
-                                                                <th>Thao tác</th>
+
+                                                                <th>Cập nhật</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -183,16 +194,15 @@
                                                                 <tr>
                                                                     <td><input type="checkbox" id="checkbox_${item.id}"
                                                                             value="${item.id}"></td>
-                                                                    <td>${item.userName}</td>
-                                                                    <td>${item.password}</td>
+                                                                    <td>${item.username}</td>
+
                                                                     <td>
-                                                                        <c:forEach var="groupRoleUser"
-                                                                            items="${listGroupRoleUser[loop.index]}">
-                                                                            <span>${groupRoleUser}</span><br>
+                                                                        <c:forEach var="userGroup"
+                                                                            items="${listUserGroup[loop.index]}">
+                                                                            <span>${userGroup}</span><br>
                                                                         </c:forEach>
                                                                         <!-- <span>${listGroupRoleUser[loop.index]}</span> -->
                                                                     </td>
-
                                                                     <td>
                                                                         <c:url var="editURL"
                                                                             value="/admin-addOrUpdateUser">
@@ -201,11 +211,11 @@
                                                                         </c:url> <a
                                                                             class="btn btn-sm btn-primary btn-edit"
                                                                             <c:if
-                                                                            test="${userRoleDetail.contains('edit-account') == true}">
+                                                                            test="${userFunction.contains('edit-account') == true}">
                                                                             style="visibility:
                                                                             visible;"</c:if>
                                                                             <c:if
-                                                                                test="${userRoleDetail.contains('edit-account') == false}">
+                                                                                test="${userFunction.contains('edit-account') == false}">
                                                                                 style="visibility:
                                                                                 hidden;"</c:if>
                                                                             data-toggle="tooltip" title="Cập nhật
@@ -213,6 +223,7 @@
                                                                             href='${editURL}'><i
                                                                                 class="fa fa-pencil-square-o"
                                                                                 aria-hidden="true"></i>
+                                                                            <!-- <i class="fa fa-undo" aria-hidden="true"></i> -->
                                                                         </a>
                                                                     </td>
                                                                 </tr>
@@ -221,7 +232,7 @@
                                                     </table>
                                                     <ul class="pagination" id="pagination"></ul>
                                                     <input type="hidden" value="" id="page" name="page" />
-                                                
+
                                                 </div>
                                             </div>
                                         </div>
@@ -289,7 +300,27 @@
                 }).get();
                 deleteUser(ids);
             });
-
+            $("#btnRs").click(function () {
+                var ids = $('tbody input[type=checkbox]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+                rsUser(ids);
+            });
+            function rsUser(data) {
+                $.ajax({
+                    url: '/api-admin-resetuser',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    success: function (result) {
+                        window.location.href = "/admin-user?&message=reset_success";
+                    },
+                    error: function (error) {
+                        window.location.href = "/admin-user?&message=error_system";
+                    }
+                });
+            }
             function deleteUser(data) {
                 $.ajax({
                     url: '/api-admin-user',

@@ -1,6 +1,4 @@
-package com.example.datn.Config;//package com.example.demo.Config;
-
-import javax.sql.DataSource;
+package com.example.datn.Config;
 
 import com.example.datn.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +17,13 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-    @Autowired
-    private AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, AuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.userDetailsService = userDetailsService;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+    }
 
 
     @Bean
@@ -70,6 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/j_spring_security_check")
                 .usernameParameter("username")
                 .passwordParameter("password")
+                .and().formLogin().loginPage("/login").permitAll()
                 .and().exceptionHandling().accessDeniedPage("/403");
 //                .and().logout().logoutUrl("/trang-chu").logoutSuccessUrl("/trang-chu");
         // Cấu hình Remember Me.

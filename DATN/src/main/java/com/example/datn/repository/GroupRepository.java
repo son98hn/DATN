@@ -12,9 +12,11 @@ import java.util.List;
 @Repository
 @Transactional
 public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
-    @Query(value = "SELECT * FROM [group] INNER JOIN user_group ON user_group.group_id=[group].id INNER JOIN [user] on user_group.user_id = [user].id WHERE [user].username =?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM [groupss] INNER JOIN user_group ON user_group.group_id=[groupss].id INNER JOIN [users] on user_group.user_id = [users].id WHERE [users].username =?1", nativeQuery = true)
     List<GroupEntity> findGroupByUserName(String userName);
+
     GroupEntity findByName(String name);
-    @Query(value = "SELECT * FROM [group]",nativeQuery = true)
+
+    @Query(value = "SELECT * FROM [groupss]", nativeQuery = true)
     List<GroupEntity> findGroup(Pageable pageable);
 }

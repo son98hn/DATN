@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "new")
+@Table(name = "news")
 public class NewEntity extends BaseEntity {
     @Column(name = "title")
     private String title;

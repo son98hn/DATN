@@ -38,4 +38,9 @@ public class UserAPI {
     public void deleteUser(@RequestBody long[] ids) {
         userService.delete(ids);
     }
+
+    @PutMapping(value = "api-admin-resetuser")
+    public void resetPassword(@RequestBody long[] ids) {
+        userService.resetPassword(ids);
+    }
 }

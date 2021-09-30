@@ -32,10 +32,13 @@ public class UserService implements IUserService {
     @Override
     public void saveUser(UserDTO userDTO) {
         if (userDTO.getId() == null) {
-            if (!verifyUser(userDTO.getUserName(), userDTO.getPhone(), userDTO.getEmail())) {
+            if (!verifyUser(userDTO.getUsername(), userDTO.getPhone(), userDTO.getEmail())) {
                 UserEntity userEntity = new UserEntity();
-                userEntity.setUserName(userDTO.getUserName());
+                userEntity.setUsername(userDTO.getUsername());
                 userEntity.setPassword(bCryptPasswordEncoder.encode(DefaultPassword));
+                userEntity.setEmail(userDTO.getEmail());
+                userEntity.setPhone(userDTO.getPhone());
+                userEntity.setName(userDTO.getName());
                 userRepository.save(userEntity);
                 for (int i = 0; i < userDTO.getGroupName().size(); i++) {
                     UserGroupEntity userGroupEntity = new UserGroupEntity();
@@ -48,10 +51,8 @@ public class UserService implements IUserService {
                 userDTO.setMessage("Tải khoản đã được sử dụng");
             }
         } else {
-            if (!verifyUser(userDTO.getUserName(), userDTO.getEmail(), userDTO.getPhone())) {
+            if (!verifyUser(userDTO.getUsername(), userDTO.getEmail(), userDTO.getPhone())) {
                 UserEntity oldUser = userRepository.findById(userDTO.getId()).get();
-//                oldUser.setUserName(oldUser.getUserName());
-//                oldUser.setPassword(oldUser.getPassword());
                 oldUser.setEmail(userDTO.getEmail());
                 oldUser.setPhone(userDTO.getPhone());
                 oldUser.setName(userDTO.getName());
@@ -70,7 +71,7 @@ public class UserService implements IUserService {
     }
 
     private Boolean verifyUser(String userName, String email, String phone) {
-        return userRepository.existsByUserNameOrEmailOrPhone(userName, email, phone);
+        return userRepository.existsByUsernameOrEmailOrPhone(userName, email, phone);
     }
 
     @Override
@@ -83,13 +84,22 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void resetPassword(long[] ids) {
+        for (long item : ids) {
+            UserEntity userEntity = userRepository.findById(item).get();
+            userEntity.setPassword(bCryptPasswordEncoder.encode(DefaultPassword));
+            userRepository.save(userEntity);
+        }
+    }
+
+    @Override
     public int totalItem() {
         return (int) userRepository.count();
     }
 
     @Override
     public UserEntity findByUserName(String userName) {
-        return userRepository.findByUserName(userName);
+        return userRepository.findByUsername(userName);
     }
 
     @Override

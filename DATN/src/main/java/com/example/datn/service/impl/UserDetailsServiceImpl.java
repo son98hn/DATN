@@ -27,12 +27,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByUserName(userName);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByUsername(username);
         if (userEntity == null) {
-            throw new UsernameNotFoundException("User " + userName + " was not found in the database");
+            throw new UsernameNotFoundException("User " + username + " was not found in the database");
         } else {
-            List<GroupEntity> groupEntities = groupRepository.findGroupByUserName(userEntity.getUserName());
+            List<GroupEntity> groupEntities = groupRepository.findGroupByUserName(userEntity.getUsername());
             List<GrantedAuthority> grantList = new ArrayList<GrantedAuthority>();
             if (groupEntities != null) {
                 for (GroupEntity groupEntity : groupEntities) {
@@ -41,7 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     grantList.add(authority);
                 }
             }
-            return (UserDetails) new User(userEntity.getUserName(),
+            return (UserDetails) new User(userEntity.getUsername(),
                     userEntity.getPassword(), grantList);
         }
     }

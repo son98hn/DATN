@@ -2,20 +2,23 @@ package com.example.datn.Controller.Admin.API;
 
 import com.example.datn.dto.NewDTO;
 import com.example.datn.entity.NewEntity;
+import com.example.datn.repository.NewRepository;
 import com.example.datn.service.INewService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.time.LocalDateTime;
 
 @RestController
 public class NewAPI {
     private final INewService newService;
 
-    public NewAPI(INewService newService) {
+    private final NewRepository newRepository;
+
+    public NewAPI(INewService newService, NewRepository newRepository) {
         this.newService = newService;
+        this.newRepository = newRepository;
     }
 
     @PostMapping(value = "/api-admin-new", produces = "application/json;charset=UTF-8")
@@ -32,9 +35,16 @@ public class NewAPI {
         newService.saveNew(model);
     }
 
-    @PutMapping(value = "/api-admin-activeNew/{id}")
-    public void activeNew(@PathVariable Long id) {
-        newService.activeNew(id);
+    @PutMapping(value = "/api-admin-activeNew")
+    public void activeNew(@RequestBody long[] ids, Principal principal) {
+        String username = principal.getName();
+        for (long id : ids) {
+            NewEntity newEntity = newService.findById(id);
+            newEntity.setModifiedBy(username);
+            newEntity.setStatus(1);
+            newEntity.setModifiedDate(LocalDateTime.now());
+            newRepository.save(newEntity);
+        }
     }
 
     @DeleteMapping(value = "/api-admin-new", produces = "application/json;charset=UTF-8")

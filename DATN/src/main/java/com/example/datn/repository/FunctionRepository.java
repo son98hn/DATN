@@ -14,16 +14,16 @@ import java.util.List;
 public interface FunctionRepository extends JpaRepository<FunctionEntity, Long> {
     FunctionEntity findByName(String name);
 
-    @Query(value = "select * from [function] inner join group_function on [function].id = group_function.function_id INNER JOIN [group] on [group].id = group_function.group_id where [group].id = ?1", nativeQuery = true)
-    List<FunctionEntity> findRoleByGroupId(Long id_long);
+    @Query(value = "select * from [functions] inner join group_function on [functions].id = group_function.function_id INNER JOIN [groupss] on [groupss].id = group_function.group_id where [groupss].id = ?1", nativeQuery = true)
+    List<FunctionEntity> findFunctionByGroupId(Long id_long);
 
     //    @Query(value = "select * from roledetail inner join role on roledetail.roleid = role.id where role.id = ?1", nativeQuery = true)
 //    List<RoleDetailEntity> findRoleByRoleId(Long id_long);
-    @Query(value = "select * from [function] inner join group_function on [function].id = group_function.function_id INNER JOIN [group] on [group].id = group_function.group_id inner join user_group on [group].id = user_group.group_id inner join [user] on user_group.user_id = [user].id where [user].username = ?1", nativeQuery = true)
-    List<FunctionEntity> findRoleByUserName(String userName);
+    @Query(value = "select * from [functions] inner join group_function on [functions].id = group_function.function_id INNER JOIN [groupss] on [groupss].id = group_function.group_id inner join user_group on [groupss].id = user_group.group_id inner join [users] on user_group.user_id = [users].id where [users].username = ?1", nativeQuery = true)
+    List<FunctionEntity> findFunctionByUserName(String userName);
 
-    @Query(value = "SELECT * FROM [function]", nativeQuery = true)
-    List<FunctionEntity> findFuntion(Pageable pageable);
+    @Query(value = "SELECT * FROM [functions]", nativeQuery = true)
+    List<FunctionEntity> findFunction(Pageable pageable);
 
     Boolean existsByNameOrCode(String name, String code);
 }

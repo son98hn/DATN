@@ -9,6 +9,8 @@ import java.util.List;
 public interface IUserService {
     void saveUser(UserDTO userDTO);
 
+    void resetPassword(long[] ids);
+
     void delete(long[] ids);
 
     List<UserEntity> findAll();

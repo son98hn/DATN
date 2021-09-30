@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "group")
+@Table(name = "groupss")
 public class GroupEntity extends BaseEntity {
     @Column(name = "name")
     private String name;

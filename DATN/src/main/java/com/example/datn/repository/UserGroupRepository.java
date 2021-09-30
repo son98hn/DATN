@@ -11,11 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface UserGroupRepository extends JpaRepository<UserGroupEntity, Long> {
-//    @Modifying
-//    @Query(value = "DELETE FROM [group_user] WHERE [group_user].[user_id]=?1", nativeQuery = true)
     void deleteByUserEntityId(Long userId);
-
-//    void deleteByUserEntityId(long userid);
 
     UserGroupEntity findByUserEntityId(Long id);
 }
