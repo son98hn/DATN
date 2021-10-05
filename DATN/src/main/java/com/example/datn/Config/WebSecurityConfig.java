@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.social.security.SpringSocialConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -61,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/logoutSuccessful");
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/trang-chu","/login**","/","/template/**","/nhom-bai-viet/**","/bai-viet/**").permitAll()
+                .antMatchers("/trang-chu","/login**","/dang-ky","/","/template/**","/nhom-bai-viet/**","/bai-viet/**").permitAll()
                 .antMatchers("/admin**").authenticated()
                 .antMatchers("/userInfo**").authenticated()
                 .anyRequest().authenticated().and()
@@ -73,11 +74,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordParameter("password")
                 .and().formLogin().loginPage("/login").permitAll()
                 .and().exceptionHandling().accessDeniedPage("/403");
+        http.authorizeRequests().and().logout().logoutUrl("/trang-chu").logoutSuccessUrl("/");
+        http.apply(new SpringSocialConfigurer())
+                .signupUrl("/dang-ky");
 //                .and().logout().logoutUrl("/trang-chu").logoutSuccessUrl("/trang-chu");
         // Cấu hình Remember Me.
 //        http.authorizeRequests().and() //
 //                .rememberMe().tokenRepository(this.persistentTokenRepository()) //
 //                .tokenValiditySeconds(1 * 24 * 60 * 60); // 24h
+
 
     }
 

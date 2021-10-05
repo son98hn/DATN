@@ -2,17 +2,25 @@ package com.example.datn.service.impl;
 
 
 import com.example.datn.dto.UserDTO;
+import com.example.datn.dto.UserForm;
+import com.example.datn.entity.GroupEntity;
 import com.example.datn.entity.UserEntity;
 import com.example.datn.entity.UserGroupEntity;
 import com.example.datn.repository.GroupRepository;
 import com.example.datn.repository.UserGroupRepository;
 import com.example.datn.repository.UserRepository;
 import com.example.datn.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionKey;
+import org.springframework.social.connect.UserProfile;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements IUserService {
@@ -21,12 +29,15 @@ public class UserService implements IUserService {
     private final UserGroupRepository userGroupRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private static final String DefaultPassword = "Abc@12345678";
+    private final
+    EntityManager entityManager;
 
-    public UserService(UserRepository userRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EntityManager entityManager) {
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -115,5 +126,54 @@ public class UserService implements IUserService {
     @Override
     public List<UserEntity> findUser(Pageable pageable) {
         return userRepository.findUser(pageable);
+    }
+
+
+    @Override
+    public UserEntity createSocialUser(Connection<?> connection) {
+        ConnectionKey connectionKey = connection.getKey();
+        UserProfile userProfile = connection.fetchUserProfile();
+        String email = userProfile.getEmail();
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity == null) {
+            return userEntity;
+        }
+        String username_prefix = userProfile.getFirstName().trim().toLowerCase() + "_" + userProfile.getLastName().trim().toLowerCase();
+        String username = userRepository.findByUsername(username_prefix).getUsername();
+        String randomPassword = UUID.randomUUID().toString().substring(0, 5);
+        String bCryptPassword  = bCryptPasswordEncoder.encode(randomPassword);
+        UserEntity user = new UserEntity();
+        user.setPassword(bCryptPassword);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setName(userProfile.getLastName());
+        entityManager.persist(user);
+        UserGroupEntity userGroupEntity = new UserGroupEntity();
+        GroupEntity groupEntity = groupRepository.findByName("user");
+        userGroupEntity.setGroupEntity(groupEntity);
+        userGroupEntity.setUserEntity(user);
+        userGroupRepository.save(userGroupEntity);
+        return user;
+    }
+
+    @Override
+    public UserEntity findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public UserEntity registerUser(UserForm userForm) {
+        UserEntity user = new UserEntity();
+        user.setUsername(userForm.getUserName());
+        user.setName(userForm.getLastName());
+        user.setEmail(userForm.getEmail());
+        user.setPassword(bCryptPasswordEncoder.encode(userForm.getPassword()));
+        this.entityManager.persist(user);
+        this.entityManager.flush();
+        UserGroupEntity userGroupEntity = new UserGroupEntity();
+        userGroupEntity.setUserEntity(user);
+        userGroupEntity.setGroupEntity(groupRepository.findByName("user"));
+        userGroupRepository.save(userGroupEntity);
+        return user;
     }
 }

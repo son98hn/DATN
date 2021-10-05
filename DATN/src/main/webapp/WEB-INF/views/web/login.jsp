@@ -89,8 +89,13 @@
 							<button type="submit" class="btn btn-primary">Đăng nhập</button>
 
 						</form>
+<%--						<form action="/signin/facebook" method="POST">--%>
+<%--							<input type="hidden" name="scope" value="public_profile" />--%>
+<%--							<input type="submit" value="Login using Facebook"/>--%>
+<%--						</form>--%>
+						<a href="/auth/facebook">Face Book</a>
 						<br>
-						<a href="/dang-ky" style="float: right;">Đăng ký tài khoản</a>
+						<a href="/register" style="float: right;">Đăng ký tài khoản</a>
 					</div>
 				</div>
 						</div>

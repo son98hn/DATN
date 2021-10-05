@@ -1,23 +1,38 @@
 package com.example.datn.Controller.User;
 
+import com.example.datn.Utils.SecurityUtil;
 import com.example.datn.Utils.WebUtils;
+import com.example.datn.dto.UserForm;
+import com.example.datn.entity.GroupEntity;
+import com.example.datn.entity.UserEntity;
+import com.example.datn.repository.GroupRepository;
 import com.example.datn.service.ICategoryParentService;
 import com.example.datn.service.ICategoryService;
-//import com.example.datn.service.ICommentService;
 import com.example.datn.service.INewService;
+import com.example.datn.service.impl.UserService;
+import com.example.datn.validate.UserValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -27,13 +42,37 @@ public class HomeController {
 
     private final INewService newService;
 
-//    private final ICommentService commentService;
+    private final UserService userService;
 
-    public HomeController(ICategoryService categoryService, ICategoryParentService categoryParentService, INewService newService) {
+    private final ConnectionFactoryLocator connectionFactoryLocator;
+
+    private final UsersConnectionRepository usersConnectionRepository;
+
+    private final GroupRepository groupRepository;
+
+    private final UserValidator userValidator;
+
+    @InitBinder
+    protected void initBinder(WebDataBinder webDataBinder) {
+        Object target = webDataBinder.getTarget();
+        if (target == null) {
+            return;
+        }
+        if (target.getClass() == UserForm.class) {
+            webDataBinder.setValidator(userValidator);
+        }
+    }
+
+    public HomeController(ICategoryService categoryService, ICategoryParentService categoryParentService, INewService newService, UserService userService, ConnectionFactoryLocator connectionFactoryLocator, UsersConnectionRepository usersConnectionRepository, UserValidator userValidator, GroupRepository groupRepository) {
         this.categoryService = categoryService;
         this.categoryParentService = categoryParentService;
         this.newService = newService;
 //        this.commentService = commentService;
+        this.userService = userService;
+        this.connectionFactoryLocator = connectionFactoryLocator;
+        this.usersConnectionRepository = usersConnectionRepository;
+        this.userValidator = userValidator;
+        this.groupRepository = groupRepository;
     }
 
     @GetMapping(value = {"/", "/trang-chu"})
@@ -66,7 +105,7 @@ public class HomeController {
     @GetMapping(value = "/bai-viet/{id}")
     public String baiViet(Model model, Principal principal,
                           @PathVariable("id") Long id) {
-        model.addAttribute("bv",newService.findById(id));
+        model.addAttribute("bv", newService.findById(id));
         model.addAttribute("categoryParent", categoryParentService.findAll());
 //        model.addAttribute("comments", commentService.findAllByNewEntityId(id));
         return "web/bai-viet";
@@ -118,4 +157,50 @@ public class HomeController {
         model.addAttribute("categoryParent", categoryParentService.findAll());
         return "web/login";
     }
+
+    @GetMapping(value = "/register")
+    public String signupPage(WebRequest webRequest, Model model) {
+        ProviderSignInUtils providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, usersConnectionRepository);
+        // Retrieve social networking information.
+        Connection<?> connection = providerSignInUtils.getConnectionFromSession(webRequest);
+        UserForm userForm = null;
+        if (connection != null) {
+            userForm = new UserForm(connection);
+        } else {
+            userForm = new UserForm();
+        }
+        model.addAttribute("userForm", userForm);
+        return "web/register";
+    }
+
+    @PostMapping(value = "register")
+    private String signupSave(WebRequest webRequest, Model model, @ModelAttribute("userForm") @Validated UserForm userForm, BindingResult bindingResult,
+                              final RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "web/register";
+        }
+        GroupEntity groupEntity = groupRepository.findByName("user");
+        UserEntity userEntity = null;
+        try {
+            userService.registerUser(userForm);
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "Error" + e.getMessage());
+            return "web/register";
+        }
+        if (userForm.getSignInProvider() != null) {
+            ProviderSignInUtils providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, usersConnectionRepository);
+            // (Spring Social API):
+            // If user login by social networking.
+            // This method saves social networking information to the UserConnection table.
+            providerSignInUtils.doPostSignUp(userEntity.getUsername(), webRequest);
+        }
+
+        List<String> roleNames = new ArrayList<String>();
+        String role = "user";
+        roleNames.add(role);
+        SecurityUtil.loginUser(userEntity, roleNames);
+        return "redirect:/web/userInfo";
+    }
+
 }
