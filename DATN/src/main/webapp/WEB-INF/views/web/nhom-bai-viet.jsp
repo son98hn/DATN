@@ -23,7 +23,7 @@
             <script src="<c:url value='/template/web/js/modernizr-3.5.0.min.js'/>"></script>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
             <script src="<c:url value='/template/paging/jquery.twbsPagination.js' />"></script>
-         </head>
+        </head>
 
         <body>
             <div class="container-fluid bg-faded fh5co_padd_mediya padding_786">
@@ -36,8 +36,9 @@
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item active">
-                                    <a class="navbar-brand" href="/trang-chu"><img src="https://static-znews.zadn.vn/images/logo-zing-home.svg" alt="img"
-                                        class="fh5co_logo_width" /></a>
+                                    <a class="navbar-brand" href="/trang-chu"><img
+                                            src="https://static-znews.zadn.vn/images/logo-zing-home.svg" alt="img"
+                                            class="fh5co_logo_width" /></a>
                                 </li>
                                 <c:forEach var="categoryP" items="${categoryParent}" begin="${categoryP.size()}"
                                     end="${categoryP.size()+4}">
@@ -81,8 +82,9 @@
                                         </div>
                                     </div>
                                     <div class="col-md-7 animate-box">
-                                        <a href='<c:url value ="/bai-viet/${listNew.id}"/>' class="fh5co_magna py-2"> ${listNew.title}</a> <a href="#"
-                                            class="fh5co_mini_time py-3"> ${listNew.createdDate} </a>
+                                        <a href='<c:url value ="/bai-viet/${listNew.id}"/>' class="fh5co_magna py-2">
+                                            ${listNew.title}</a> <a href="#" class="fh5co_mini_time py-3">
+                                            ${listNew.createdDate} </a>
                                         <div class="fh5co_consectetur"> ${listNew.shortDescription}
                                         </div>
                                     </div>
@@ -91,7 +93,8 @@
                         </div>
                         <div class="col-md-3 animate-box" data-animate-effect="fadeInRight">
                             <div>
-                                <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">Phổ biến nhất</div>
+                                <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">Phổ biến nhất
+                                </div>
                             </div>
                             <div class="row pb-3">
                                 <div class="col-5 align-self-center">
@@ -144,7 +147,8 @@
                             <ul class="footer_menu">
                                 <c:forEach var="categoryP" items="${categoryParent}" begin="${categoryP.size()}"
                                     end="${categoryP.size()+5}">
-                                    <li><a href='<c:url value ="/nhom-bai-viet/${categoryP.code}"/>' class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp;
+                                    <li><a href='<c:url value ="/nhom-bai-viet/${categoryP.code}"/>' class=""><i
+                                                class="fa fa-angle-right"></i>&nbsp;&nbsp;
                                             ${categoryP.name}</a></li>
                                 </c:forEach>
                             </ul>
@@ -154,7 +158,8 @@
                             <ul class="footer_menu">
                                 <c:forEach var="categoryP" items="${categoryParent}" begin="${categoryP.size()+6}"
                                     end="${categoryP.size()+11}">
-                                    <li><a href='<c:url value ="/nhom-bai-viet/${categoryP.code}"/>' class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp;
+                                    <li><a href='<c:url value ="/nhom-bai-viet/${categoryP.code}"/>' class=""><i
+                                                class="fa fa-angle-right"></i>&nbsp;&nbsp;
                                             ${categoryP.name}</a></li>
                                 </c:forEach>
                             </ul>
@@ -211,4 +216,5 @@
                 });
             });
         </script>
+
         </html>

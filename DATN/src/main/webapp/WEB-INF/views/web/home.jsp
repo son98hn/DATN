@@ -37,8 +37,8 @@
                                 src="https://static-znews.zadn.vn/images/logo-zing-home.svg" alt="img"
                                 class="mobile_logo_width" /></a>
                         <!-- <a class="navbar-brand" href="/login"><img style="width: 30px; margin-top: 5px;"
-                    src="https://png.pngtree.com/png-vector/20190223/ourlarge/pngtree-profile-line-black-icon-png-image_691051.jpg"
-                    alt="img" class="fh5co_logo_width" /></a> -->
+        src="https://png.pngtree.com/png-vector/20190223/ourlarge/pngtree-profile-line-black-icon-png-image_691051.jpg"
+        alt="img" class="fh5co_logo_width" /></a> -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item active">
@@ -228,15 +228,14 @@
                         </div>
                         <div class="col-md-3 animate-box" data-animate-effect="fadeInRight">
                             <div>
-                                <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">Phổ biến nhất
-                                </div>
+                                <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">Phổ biến nhất</div>
                             </div>
                             <div class="row pb-3">
                                 <div class="col-5 align-self-center">
                                     <img src="\" alt="img" class="fh5co_most_trading" />
                                 </div>
                                 <div class="col-7 paddding">
-                                    <div class="most_fh5co_treding_font">
+                                    <div class="most_fh5co_treding_font"> 
                                     </div>
                                     <div class="most_fh5co_treding_font_123"></div>
                                 </div>
@@ -343,7 +342,6 @@
                     onPageClick: function (event, page) {
                         if (currentPage != page) {
                             $('#page').val(page);
-                            $('#size').val(limit);
                             $('#formSubmit').submit();
                         }
                     }

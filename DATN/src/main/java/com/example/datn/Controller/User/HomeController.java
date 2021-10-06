@@ -75,7 +75,7 @@ public class HomeController {
         this.groupRepository = groupRepository;
     }
 
-    @GetMapping(value = {"/", "/trang-chu"})
+    @GetMapping(value = { "/trang-chu"})
     public String index(Model model, HttpServletRequest request, @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                         @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
                         @RequestParam(name = "sort", required = false, defaultValue = "DESC") String sort) {
