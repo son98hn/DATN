@@ -2,7 +2,7 @@ package com.example.datn.Controller.User;
 
 import com.example.datn.Utils.SecurityUtil;
 import com.example.datn.Utils.WebUtils;
-import com.example.datn.dto.UserForm;
+import com.example.datn.dto.UserDTO;
 import com.example.datn.entity.GroupEntity;
 import com.example.datn.entity.UserEntity;
 import com.example.datn.repository.GroupRepository;
@@ -58,7 +58,7 @@ public class HomeController {
         if (target == null) {
             return;
         }
-        if (target.getClass() == UserForm.class) {
+        if (target.getClass() == UserDTO.class) {
             webDataBinder.setValidator(userValidator);
         }
     }
@@ -129,10 +129,10 @@ public class HomeController {
 //       page
         Sort sortable = null;
         if (sort.equals("ASC")) {
-            sortable = Sort.by("new.id").ascending();
+            sortable = Sort.by("id").ascending();
         }
         if (sort.equals("DESC")) {
-            sortable = Sort.by("new.id").descending();
+            sortable = Sort.by("id").descending();
         }
         Pageable pageable = PageRequest.of(page - 1, size, sortable);
         model.addAttribute("totalPage", (int) Math.ceil((double) newService.totalItemByCategoryParent(categoryParent) / size));
@@ -140,6 +140,7 @@ public class HomeController {
         model.addAttribute("listNews", newService.findNewsByCategoryParentCode(categoryParent, pageable));
         model.addAttribute("categoryParent", categoryParentService.findAll());
         model.addAttribute("nameCategory", categoryParentService.findByCode(categoryParent).getName());
+        model.addAttribute("codeCategory", categoryParent);
         return "web/nhom-bai-viet";
     }
 
@@ -163,44 +164,20 @@ public class HomeController {
         ProviderSignInUtils providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, usersConnectionRepository);
         // Retrieve social networking information.
         Connection<?> connection = providerSignInUtils.getConnectionFromSession(webRequest);
-        UserForm userForm = null;
+        UserDTO userDTO = null;
         if (connection != null) {
-            userForm = new UserForm(connection);
+            userDTO = new UserDTO(connection);
         } else {
-            userForm = new UserForm();
+            userDTO = new UserDTO();
         }
-        model.addAttribute("userForm", userForm);
+        model.addAttribute("userDTO", userDTO);
         return "web/register";
     }
 
-    @PostMapping(value = "register")
-    private String signupSave(WebRequest webRequest, Model model, @ModelAttribute("userForm") @Validated UserForm userForm, BindingResult bindingResult,
-                              final RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "web/register";
-        }
-        GroupEntity groupEntity = groupRepository.findByName("user");
-        UserEntity userEntity = null;
-        try {
-            userService.registerUser(userForm);
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "Error" + e.getMessage());
-            return "web/register";
-        }
-        if (userForm.getSignInProvider() != null) {
-            ProviderSignInUtils providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, usersConnectionRepository);
-            // (Spring Social API):
-            // If user login by social networking.
-            // This method saves social networking information to the UserConnection table.
-            providerSignInUtils.doPostSignUp(userEntity.getUsername(), webRequest);
-        }
-
-        List<String> roleNames = new ArrayList<String>();
-        String role = "user";
-        roleNames.add(role);
-        SecurityUtil.loginUser(userEntity, roleNames);
-        return "redirect:/web/userInfo";
+    @PostMapping(value = "/register", produces = "application/json;charset=UTF-8")
+    private String signupSave(WebRequest webRequest, Model model, @RequestBody UserDTO userDTO) {
+        userService.registerUser(userDTO);
+        return "web/register";
     }
 
 }

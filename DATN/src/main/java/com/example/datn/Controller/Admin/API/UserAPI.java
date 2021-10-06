@@ -20,7 +20,7 @@ public class UserAPI {
     }
 
     @PostMapping(value = "/api-admin-user", produces = "application/json;charset=UTF-8")
-    public void createUser(@RequestBody UserDTO model, HttpServletRequest request) {
+    public void createUser(@RequestBody UserDTO model) {
 //        UserDTO userDTO = (UserDTO) request.getSession().getAttribute("user");
 //        model.setCreatedBy(userDTO.getUserName());
         userService.saveUser(model);

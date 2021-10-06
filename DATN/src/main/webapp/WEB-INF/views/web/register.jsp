@@ -76,21 +76,36 @@
 						<c:if test="${not empty message}">
 							<div class="alert alert-${alert}">${message}</div>
 						</c:if>
-						<form action="/j_spring_security_check" method="post">
+						<form id="formSubmit">
+							<div class="form-group">
+								<input type="text" class="form-control" id="name" name="name"
+									   placeholder="Tên">
+							</div>
 							<div class="form-group">
 								<input type="text" class="form-control" id="username" name="username"
 									placeholder="Tên đăng nhập">
 							</div>
-
+						
 							<div class="form-group">
 								<input type="password" class="form-control" id="password" name="password"
 									placeholder="Mật khẩu">
 							</div>
-							<button type="submit" class="btn btn-primary">Đăng nhập</button>
+							<div class="form-group">
+								<input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+									   placeholder="Nhập lại mật khẩu">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" id="email" name="email"
+									   placeholder="Email">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" id="phone" name="phone"
+									   placeholder="Số điện thoại">
+							</div>
+							<button type="button" class="btn btn-primary" id="btnRegister">Đăng ký</button>
 
 						</form>
 						<br>
-						<a href="/dang-ky" style="float: right;">Đăng ký tài khoản</a>
 					</div>
 				</div>
 						</div>
@@ -181,5 +196,58 @@
 		<script src="<c:url value='/template/web/js/jquery.waypoints.min.js'/>"></script>
 		<!-- Main -->
 		<script src="<c:url value='/template/web/js/main.js'/>"></script>
-
+		<script>
+			  $('#btnRegister').click(function (e) {
+                e.preventDefault();
+                // var data = {};
+                var formData = $('#formSubmit').serializeArray();
+                // $.each(formData, function (i, v) {
+                //     data["" + v.name + ""] = v.value;
+                // });
+                    register(formData);
+            });
+			function register(data) {
+                var username = "";
+                var name = "";
+                var email = "";
+                var phone = "";
+                var password = "";
+				var confirmPassword = "";
+                data.forEach(element => {
+                    if (element.name == "username")
+                        username = element.value;
+                    if (element.name == "name")
+                        name = element.value;
+                    if (element.name == "email")
+                        email = element.value;
+                    if (element.name == "phone")
+                        phone = element.value;
+					if (element.name == "password")
+                        password = element.value;
+					if (element.name == "confirmPassword")
+                        confirmPassword = element.value;
+                });
+                sendDta = {
+                    username: username,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    password: password,
+					confirmPassword: confirmPassword
+                };
+                $.ajax({
+                    url: '/register',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(sendDta),
+                    dataType: 'json',
+                    success: function (result) {
+                        window.location.href = "/register?id=" + result.id + "&message=insert_success";
+                    },
+                    error: function (error) {
+                        window.location.href = "/register?message=error_system";
+                    }
+                });
+            }
+		</script>
 		</html>

@@ -62,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/logoutSuccessful");
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/trang-chu","/login**","/dang-ky","/","/template/**","/nhom-bai-viet/**","/bai-viet/**").permitAll()
+                .antMatchers("/trang-chu","/login**","/register","/","/template/**","/nhom-bai-viet/**","/bai-viet/**").permitAll()
                 .antMatchers("/admin**").authenticated()
                 .antMatchers("/userInfo**").authenticated()
                 .anyRequest().authenticated().and()
@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().exceptionHandling().accessDeniedPage("/403");
         http.authorizeRequests().and().logout().logoutUrl("/trang-chu").logoutSuccessUrl("/");
         http.apply(new SpringSocialConfigurer())
-                .signupUrl("/dang-ky");
+                .signupUrl("/register");
 //                .and().logout().logoutUrl("/trang-chu").logoutSuccessUrl("/trang-chu");
         // Cấu hình Remember Me.
 //        http.authorizeRequests().and() //

@@ -1,7 +1,6 @@
 package com.example.datn.service;
 
 import com.example.datn.dto.UserDTO;
-import com.example.datn.dto.UserForm;
 import com.example.datn.entity.UserEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.social.connect.Connection;
@@ -29,5 +28,5 @@ public interface IUserService {
 
     UserEntity findByEmail(String email);
 
-    UserEntity registerUser(UserForm userForm);
+    void registerUser(UserDTO userDTO);
 }

@@ -93,7 +93,6 @@
                             <div>
                                 <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">Phổ biến nhất</div>
                             </div>
-
                             <div class="row pb-3">
                                 <div class="col-5 align-self-center">
                                     <img src="" alt="img" class="fh5co_most_trading" />
@@ -105,7 +104,7 @@
                             </div>
                         </div>
                     </div>
-                    <form action="<c:url value='/nhom-bai-viet/xa-hoi'/>" id="formSubmit" method="GET">
+                    <form action="<c:url value='/nhom-bai-viet/${codeCategory}'/>" id="formSubmit" method="GET">
                         <ul class="pagination" id="pagination"></ul>
                         <input type="hidden" value="" id="page" name="page" />
                     </form>
@@ -196,7 +195,7 @@
         <script>
             var totalPages = ${ totalPage };
             var currentPage = ${ page };
-            var limit = 5;
+            var limit = 8;
             $(function () {
                 window.pagObj = $('#pagination').twbsPagination({
                     totalPages: totalPages,

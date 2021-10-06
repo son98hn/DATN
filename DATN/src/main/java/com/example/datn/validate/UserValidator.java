@@ -1,10 +1,9 @@
 package com.example.datn.validate;
 
-import org.apache.commons.validator.EmailValidator;
-import com.example.datn.dto.UserForm;
+import com.example.datn.dto.UserDTO;
 import com.example.datn.entity.UserEntity;
 import com.example.datn.service.impl.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.validator.EmailValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -17,19 +16,22 @@ import org.springframework.validation.Validator;
  */
 @Component
 public class UserValidator implements Validator {
-    private EmailValidator emailValidator = EmailValidator.getInstance();
+    private final EmailValidator emailValidator = EmailValidator.getInstance();
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserValidator(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return aClass == UserForm.class;
+        return aClass == UserDTO.class;
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        UserForm userForm = (UserForm) target;
+        UserDTO userDTO = (UserDTO) target;
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email","Email is required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "", "User name is required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "", "First name is required");
@@ -39,30 +41,28 @@ public class UserValidator implements Validator {
         if(errors.hasErrors())
             return;
 
-        if (!emailValidator.isValid(userForm.getEmail())) {
+        if (!emailValidator.isValid(userDTO.getEmail())) {
             errors.rejectValue("email","Email is not valid");
             return;
         }
 
-        UserEntity userAccount = userService.findByUserName( userForm.getUserName());
+        UserEntity userAccount = userService.findByUserName( userDTO.getUsername());
         if (userAccount != null) {
-            if (userForm.getUserId() == null) {
+            if (userDTO.getUserId() == null) {
                 errors.rejectValue("userName", "", "User name is not available");
                 return;
-            } else if (!userForm.getUserId().equals(userAccount.getId() )) {
+            } else if (!userDTO.getUserId().equals(userAccount.getId() )) {
                 errors.rejectValue("userName", "", "User name is not available");
                 return;
             }
         }
 
-        userAccount = userService.findByUserName(userForm.getEmail());
+        userAccount = userService.findByUserName(userDTO.getEmail());
         if (userAccount != null) {
-            if (userForm.getUserId() == null) {
+            if (userDTO.getUserId() == null) {
                 errors.rejectValue("email", "", "Email is not available");
-                return;
-            } else if (!userForm.getUserId().equals(userAccount.getId() )) {
+            } else if (!userDTO.getUserId().equals(userAccount.getId() )) {
                 errors.rejectValue("email", "", "Email is not available");
-                return;
             }
         }
     }

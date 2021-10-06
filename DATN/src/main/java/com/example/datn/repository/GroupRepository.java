@@ -19,4 +19,6 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
 
     @Query(value = "SELECT * FROM [groupss]", nativeQuery = true)
     List<GroupEntity> findGroup(Pageable pageable);
+
+    GroupEntity findByCode(String code);
 }

@@ -1,8 +1,5 @@
 package com.example.datn.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -23,11 +20,11 @@ public class UserConnection implements Serializable {
     @Column(name = "Userid", length = 255, nullable = false)
     private String userId;
 
-    @Id
+//    @Id
     @Column(name = "Providerid", length = 255, nullable = false)
     private String providerId;
 
-    @Id
+//    @Id
     @Column(name = "Provideruserid", length = 255, nullable = false)
     private String providerUserId;
 

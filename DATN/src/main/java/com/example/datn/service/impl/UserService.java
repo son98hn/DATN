@@ -2,7 +2,6 @@ package com.example.datn.service.impl;
 
 
 import com.example.datn.dto.UserDTO;
-import com.example.datn.dto.UserForm;
 import com.example.datn.entity.GroupEntity;
 import com.example.datn.entity.UserEntity;
 import com.example.datn.entity.UserGroupEntity;
@@ -10,7 +9,6 @@ import com.example.datn.repository.GroupRepository;
 import com.example.datn.repository.UserGroupRepository;
 import com.example.datn.repository.UserRepository;
 import com.example.datn.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.social.connect.Connection;
@@ -31,13 +29,15 @@ public class UserService implements IUserService {
     private static final String DefaultPassword = "Abc@12345678";
     private final
     EntityManager entityManager;
+    private final UserGroupService userGroupService;
 
-    public UserService(UserRepository userRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EntityManager entityManager) {
+    public UserService(UserRepository userRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EntityManager entityManager, UserGroupService userGroupService) {
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.entityManager = entityManager;
+        this.userGroupService = userGroupService;
     }
 
     @Override
@@ -141,7 +141,7 @@ public class UserService implements IUserService {
         String username_prefix = userProfile.getFirstName().trim().toLowerCase() + "_" + userProfile.getLastName().trim().toLowerCase();
         String username = userRepository.findByUsername(username_prefix).getUsername();
         String randomPassword = UUID.randomUUID().toString().substring(0, 5);
-        String bCryptPassword  = bCryptPasswordEncoder.encode(randomPassword);
+        String bCryptPassword = bCryptPasswordEncoder.encode(randomPassword);
         UserEntity user = new UserEntity();
         user.setPassword(bCryptPassword);
         user.setUsername(username);
@@ -161,19 +161,27 @@ public class UserService implements IUserService {
         return userRepository.findByEmail(email);
     }
 
+    private Boolean verifyRegister(String password, String confirmPassword) {
+        return (password.equals(confirmPassword));
+    }
+
     @Override
-    public UserEntity registerUser(UserForm userForm) {
-        UserEntity user = new UserEntity();
-        user.setUsername(userForm.getUserName());
-        user.setName(userForm.getLastName());
-        user.setEmail(userForm.getEmail());
-        user.setPassword(bCryptPasswordEncoder.encode(userForm.getPassword()));
-        this.entityManager.persist(user);
-        this.entityManager.flush();
-        UserGroupEntity userGroupEntity = new UserGroupEntity();
-        userGroupEntity.setUserEntity(user);
-        userGroupEntity.setGroupEntity(groupRepository.findByName("user"));
-        userGroupRepository.save(userGroupEntity);
-        return user;
+    public void registerUser(UserDTO userDTO) {
+        if (verifyRegister(userDTO.getPassword(), userDTO.getConfirmPassword()) && !verifyUser(userDTO.getUsername(), userDTO.getEmail(), userDTO.getPhone())) {
+            UserEntity user = new UserEntity();
+            user.setUsername(userDTO.getUsername());
+            user.setName(userDTO.getName());
+            user.setEmail(userDTO.getEmail());
+            user.setPhone(userDTO.getPhone());
+            user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+            userRepository.save(user);
+            UserGroupEntity userGroupEntity = new UserGroupEntity();
+            userGroupEntity.setUserEntity(user);
+            userGroupEntity.setGroupEntity(groupRepository.findByCode("user"));
+            userGroupRepository.save(userGroupEntity);
+            userDTO.setMessage("Đăng ký tài khoản thành công");
+        } else {
+            userDTO.setMessage("Đăng ký tài khoản thất bại");
+        }
     }
 }
